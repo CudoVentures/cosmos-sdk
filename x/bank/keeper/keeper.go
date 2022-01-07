@@ -11,6 +11,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 	"github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -54,6 +55,8 @@ type BaseKeeper struct {
 	cdc        codec.BinaryCodec
 	storeKey   sdk.StoreKey
 	paramSpace paramtypes.Subspace
+	dk         distrkeeper.Keeper
+	dkSet      bool
 }
 
 // GetPaginatedTotalSupply queries for the supply, ignoring 0 coins, with a given pagination
@@ -421,9 +424,15 @@ func (k BaseKeeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 	}
 
 	for _, amount := range amounts {
-		supply := k.GetSupply(ctx, amount.GetDenom())
-		supply = supply.Sub(amount)
-		k.setSupply(ctx, supply)
+		if k.dkSet {
+			fp := k.dk.GetFeePool(ctx)
+			fp.CommunityPool = fp.CommunityPool.Add(sdk.NewDecCoinFromCoin(amount))
+			k.dk.SetFeePool(ctx, fp)
+		} else {
+			supply := k.GetSupply(ctx, amount.GetDenom())
+			supply = supply.Sub(amount)
+			k.setSupply(ctx, supply)
+		}
 	}
 
 	logger := k.Logger(ctx)
@@ -435,6 +444,11 @@ func (k BaseKeeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 	)
 
 	return nil
+}
+
+func (k *BaseKeeper) SetDistrKeeper(dk distrkeeper.Keeper) {
+	(*k).dk = dk
+	(*k).dkSet = true
 }
 
 // setSupply sets the supply for the given coin
