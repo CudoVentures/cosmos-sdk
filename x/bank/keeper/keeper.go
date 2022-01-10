@@ -416,9 +416,6 @@ func (k BaseKeeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 	}
 
 	for _, amount := range amounts {
-		fmt.Println("amount.Denom")
-		fmt.Println(amount.Denom)
-		fmt.Println(amount.Denom == "acudos")
 		if k.dkSet && amount.Denom == "acudos" {
 			fp := k.dk.GetFeePool(ctx)
 			fp.CommunityPool = fp.CommunityPool.Add(sdk.NewDecCoinFromCoin(amount))
