@@ -53,6 +53,7 @@ var lock = new(sync.Mutex)
 // AppConstructor defines a function which accepts a network configuration and
 // creates an ABCI Application to provide to Tendermint.
 type AppConstructor = func(val Validator) servertypes.Application
+type PatchGenesis = func(cfg *Config, genBalances []banktypes.Balance, validators []*Validator) error
 
 // NewAppConstructor returns a new simapp AppConstructor
 func NewAppConstructor(encodingCfg params.EncodingConfig) AppConstructor {
@@ -91,6 +92,7 @@ type Config struct {
 	CleanupDir       bool                       // remove base temporary directory during cleanup
 	SigningAlgo      string                     // signing algorithm for keys
 	KeyringOptions   []keyring.Option
+	PatchGenesis     PatchGenesis
 }
 
 // DefaultConfig returns a sane default configuration suitable for nearly all
@@ -367,6 +369,9 @@ func New(t *testing.T, cfg Config) *Network {
 		}
 	}
 
+	if cfg.PatchGenesis != nil {
+		require.NoError(t, cfg.PatchGenesis(&cfg, genBalances, network.Validators))
+	}
 	require.NoError(t, initGenFiles(cfg, genAccounts, genBalances, genFiles))
 	require.NoError(t, collectGenFiles(cfg, network.Validators, network.BaseDir))
 
