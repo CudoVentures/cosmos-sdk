@@ -296,11 +296,66 @@ func (suite *IntegrationTestSuite) TestSupply_BurnCoins() {
 	authKeeper.SetModuleAccount(ctx, multiPermAcc)
 
 	err = keeper.BurnCoins(ctx, multiPermAcc.GetName(), initCoins)
-	supplyAfterBurn, _, err = keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
 	suite.Require().NoError(err)
+	supplyAfterBurn, _, err = keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
 	suite.Require().NoError(err)
 	suite.Require().Equal(sdk.NewCoins().String(), getCoinsByName(ctx, keeper, authKeeper, multiPermAcc.GetName()).String())
 	suite.Require().Equal(supplyAfterInflation.Sub(initCoins), supplyAfterBurn)
+}
+
+func (suite *IntegrationTestSuite) TestSupply_BurnCoinsToCommunityPool() {
+	ctx := suite.ctx
+	require := suite.Require()
+
+	initialPower := int64(100)
+	initTokens := suite.app.StakingKeeper.TokensFromConsensusPower(ctx, initialPower)
+	totalSupplyAcudos := sdk.NewCoins(sdk.NewCoin("acudos", initTokens))
+	totalSupplyFoo := sdk.NewCoins(sdk.NewCoin("foo", initTokens))
+
+	// add module accounts to supply keeper
+	authKeeper, keeper := suite.initKeepersWithmAccPerms(make(map[string]bool))
+
+	keeper.SetDistrKeeper(suite.app.DistrKeeper)
+
+	// set burnerAcc balance
+	authKeeper.SetModuleAccount(ctx, burnerAcc)
+	require.NoError(keeper.MintCoins(ctx, authtypes.Minter, totalSupplyAcudos))
+	require.NoError(keeper.SendCoinsFromModuleToAccount(ctx, authtypes.Minter, burnerAcc.GetAddress(), totalSupplyAcudos))
+
+	supplyBeforeBurn, _, err := keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
+	require.NoError(err)
+
+	err = keeper.BurnCoins(ctx, authtypes.Burner, totalSupplyAcudos)
+	require.NoError(err)
+
+	supplyAfterBurn, _, err := keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
+	require.NoError(err)
+	require.Equal(sdk.NewCoins().String(), getCoinsByName(ctx, keeper, authKeeper, authtypes.Burner).String())
+	require.Equal(supplyBeforeBurn, supplyAfterBurn)
+
+	cp := suite.app.DistrKeeper.GetFeePool(ctx).CommunityPool
+	require.Equal(sdk.NewDecCoinsFromCoins(sdk.NewCoin("acudos", initTokens)), cp)
+
+	//Test that everything other than acudos is still being burned
+
+	// set burnerAcc balance
+	authKeeper.SetModuleAccount(ctx, burnerAcc)
+	require.NoError(keeper.MintCoins(ctx, authtypes.Minter, totalSupplyFoo))
+	require.NoError(keeper.SendCoinsFromModuleToAccount(ctx, authtypes.Minter, burnerAcc.GetAddress(), totalSupplyFoo))
+
+	supplyBeforeBurn, _, err = keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
+	require.NoError(err)
+
+	err = keeper.BurnCoins(ctx, authtypes.Burner, totalSupplyFoo)
+	require.NoError(err)
+
+	supplyAfterBurn, _, err = keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
+	require.NoError(err)
+	require.NotEqual(supplyBeforeBurn, supplyAfterBurn)
+	require.Equal(supplyAfterBurn, totalSupplyAcudos)
+
+	cp = suite.app.DistrKeeper.GetFeePool(ctx).CommunityPool
+	require.Equal(sdk.NewDecCoinsFromCoins(sdk.NewCoin("acudos", initTokens)), cp)
 }
 
 func (suite *IntegrationTestSuite) TestSendCoinsNewAccount() {

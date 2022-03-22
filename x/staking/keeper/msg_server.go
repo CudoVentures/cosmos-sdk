@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	metrics "github.com/armon/go-metrics"
@@ -87,6 +88,12 @@ func (k msgServer) CreateValidator(goCtx context.Context, msg *types.MsgCreateVa
 	delegatorAddress, err := sdk.AccAddressFromBech32(msg.DelegatorAddress)
 	if err != nil {
 		return nil, err
+	}
+
+	msd, _ := sdk.NewIntFromString(types.MinSelfDelegation)
+
+	if msg.MinSelfDelegation.LT(msd) {
+		return nil, fmt.Errorf("MinSelfDelegation lower than %v", msd)
 	}
 
 	validator.MinSelfDelegation = msg.MinSelfDelegation
