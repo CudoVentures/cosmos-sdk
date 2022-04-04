@@ -415,20 +415,24 @@ func (k BaseKeeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 		return err
 	}
 
+	var resultString string
+
 	for _, amount := range amounts {
 		if k.dkSet && amount.Denom == "acudos" {
 			fp := k.dk.GetFeePool(ctx)
 			fp.CommunityPool = fp.CommunityPool.Add(sdk.NewDecCoinFromCoin(amount))
 			k.dk.SetFeePool(ctx, fp)
+			resultString = "moved tokens from module account to community pool"
 		} else {
 			supply := k.GetSupply(ctx, amount.GetDenom())
 			supply = supply.Sub(amount)
 			k.setSupply(ctx, supply)
+			resultString = "burned tokens from module account"
 		}
 	}
 
 	logger := k.Logger(ctx)
-	logger.Info("burned tokens from module account", "amount", amounts.String(), "from", moduleName)
+	logger.Info(resultString, "amount", amounts.String(), "from", moduleName)
 
 	// emit burn event
 	ctx.EventManager().EmitEvent(

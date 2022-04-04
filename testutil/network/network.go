@@ -53,6 +53,7 @@ var lock = new(sync.Mutex)
 // AppConstructor defines a function which accepts a network configuration and
 // creates an ABCI Application to provide to Tendermint.
 type AppConstructor = func(val Validator) servertypes.Application
+type PatchGenesis = func(cfg *Config, genBalances []banktypes.Balance, validators []*Validator) error
 
 // NewAppConstructor returns a new simapp AppConstructor
 func NewAppConstructor(encodingCfg params.EncodingConfig) AppConstructor {
@@ -74,23 +75,25 @@ type Config struct {
 	LegacyAmino       *codec.LegacyAmino // TODO: Remove!
 	InterfaceRegistry codectypes.InterfaceRegistry
 
-	TxConfig         client.TxConfig
-	AccountRetriever client.AccountRetriever
-	AppConstructor   AppConstructor             // the ABCI application constructor
-	GenesisState     map[string]json.RawMessage // custom gensis state to provide
-	TimeoutCommit    time.Duration              // the consensus commitment timeout
-	ChainID          string                     // the network chain-id
-	NumValidators    int                        // the total number of validators to create and bond
-	BondDenom        string                     // the staking bond denomination
-	MinGasPrices     string                     // the minimum gas prices each validator will accept
-	AccountTokens    sdk.Int                    // the amount of unique validator tokens (e.g. 1000node0)
-	StakingTokens    sdk.Int                    // the amount of tokens each validator has available to stake
-	BondedTokens     sdk.Int                    // the amount of tokens each validator stakes
-	PruningStrategy  string                     // the pruning strategy each validator will have
-	EnableLogging    bool                       // enable Tendermint logging to STDOUT
-	CleanupDir       bool                       // remove base temporary directory during cleanup
-	SigningAlgo      string                     // signing algorithm for keys
-	KeyringOptions   []keyring.Option
+	TxConfig          client.TxConfig
+	AccountRetriever  client.AccountRetriever
+	AppConstructor    AppConstructor             // the ABCI application constructor
+	GenesisState      map[string]json.RawMessage // custom gensis state to provide
+	TimeoutCommit     time.Duration              // the consensus commitment timeout
+	ChainID           string                     // the network chain-id
+	NumValidators     int                        // the total number of validators to create and bond
+	BondDenom         string                     // the staking bond denomination
+	MinGasPrices      string                     // the minimum gas prices each validator will accept
+	AccountTokens     sdk.Int                    // the amount of unique validator tokens (e.g. 1000node0)
+	StakingTokens     sdk.Int                    // the amount of tokens each validator has available to stake
+	BondedTokens      sdk.Int                    // the amount of tokens each validator stakes
+	MinSelfDelegation sdk.Int
+	PruningStrategy   string // the pruning strategy each validator will have
+	EnableLogging     bool   // enable Tendermint logging to STDOUT
+	CleanupDir        bool   // remove base temporary directory during cleanup
+	SigningAlgo       string // signing algorithm for keys
+	KeyringOptions    []keyring.Option
+	PatchGenesis      PatchGenesis
 }
 
 // DefaultConfig returns a sane default configuration suitable for nearly all
@@ -111,13 +114,15 @@ func DefaultConfig() Config {
 		NumValidators:     4,
 		BondDenom:         sdk.DefaultBondDenom,
 		MinGasPrices:      fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom),
-		AccountTokens:     sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction),
-		StakingTokens:     sdk.TokensFromConsensusPower(500, sdk.DefaultPowerReduction),
-		BondedTokens:      sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction),
+		AccountTokens:     sdk.TokensFromConsensusPower(4000000, sdk.DefaultPowerReduction),
+		StakingTokens:     sdk.TokensFromConsensusPower(4000000, sdk.DefaultPowerReduction),
+		BondedTokens:      sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction),
+		MinSelfDelegation: sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction),
 		PruningStrategy:   storetypes.PruningOptionNothing,
 		CleanupDir:        true,
 		SigningAlgo:       string(hd.Secp256k1Type),
 		KeyringOptions:    []keyring.Option{},
+		PatchGenesis:      nil,
 	}
 }
 
@@ -309,7 +314,7 @@ func New(t *testing.T, cfg Config) *Network {
 			sdk.NewCoin(cfg.BondDenom, cfg.BondedTokens),
 			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
 			stakingtypes.NewCommissionRates(commission, sdk.OneDec(), sdk.OneDec()),
-			sdk.OneInt(),
+			cfg.MinSelfDelegation,
 		)
 		require.NoError(t, err)
 
@@ -367,6 +372,9 @@ func New(t *testing.T, cfg Config) *Network {
 		}
 	}
 
+	if cfg.PatchGenesis != nil {
+		require.NoError(t, cfg.PatchGenesis(&cfg, genBalances, network.Validators))
+	}
 	require.NoError(t, initGenFiles(cfg, genAccounts, genBalances, genFiles))
 	require.NoError(t, collectGenFiles(cfg, network.Validators, network.BaseDir))
 
