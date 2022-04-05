@@ -19,7 +19,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	tcmd "github.com/tendermint/tendermint/cmd/tendermint/commands"
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmlog "github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
@@ -271,16 +270,13 @@ func AddCommands(rootCmd *cobra.Command, defaultNodeHome string, appCreator type
 		ShowValidatorCmd(),
 		ShowAddressCmd(),
 		VersionCmd(),
-		tcmd.ResetAllCmd,
-		tcmd.ResetStateCmd,
-		tcmd.ResetPrivValidatorCmd,
 	)
 	startCmd := StartCmd(appCreator, defaultNodeHome)
 	addStartFlags(startCmd)
 
 	rootCmd.AddCommand(
 		startCmd,
-		// UnsafeResetAllCmd(),
+		UnsafeResetAllCmd(),
 		tendermintCmd,
 		ExportCmd(appExport, defaultNodeHome),
 		version.NewVersionCommand(),
