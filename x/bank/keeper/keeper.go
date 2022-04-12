@@ -11,10 +11,12 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 	"github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 var _ Keeper = (*BaseKeeper)(nil)
+var burnDenom = "acudos"
 
 // Keeper defines a module interface that facilitates the transfer of coins
 // between accounts.
@@ -55,6 +57,8 @@ type BaseKeeper struct {
 	storeKey               sdk.StoreKey
 	paramSpace             paramtypes.Subspace
 	mintCoinsRestrictionFn MintingRestrictionFn
+	dk                     distrkeeper.Keeper
+	dkSet                  bool
 }
 
 type MintingRestrictionFn func(ctx sdk.Context, coins sdk.Coins) error
@@ -415,14 +419,28 @@ func (k BaseKeeper) MintCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 		return err
 	}
 
+	var resultString string
+
 	for _, amount := range amounts {
 		supply := k.GetSupply(ctx, amount.GetDenom())
 		supply = supply.Add(amount)
 		k.setSupply(ctx, supply)
+
+		if k.dkSet && amount.Denom == burnDenom {
+			fp := k.dk.GetFeePool(ctx)
+			fp.CommunityPool = fp.CommunityPool.Add(sdk.NewDecCoinFromCoin(amount))
+			k.dk.SetFeePool(ctx, fp)
+			resultString = "moved tokens from module account to community pool"
+		} else {
+			supply := k.GetSupply(ctx, amount.GetDenom())
+			supply = supply.Sub(amount)
+			k.setSupply(ctx, supply)
+			resultString = "burned tokens from module account"
+		}
 	}
 
 	logger := k.Logger(ctx)
-	logger.Info("minted coins from module account", "amount", amounts.String(), "from", moduleName)
+	logger.Info(resultString, "amount", amounts.String(), "from", moduleName)
 
 	// emit mint event
 	ctx.EventManager().EmitEvent(
@@ -430,6 +448,11 @@ func (k BaseKeeper) MintCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 	)
 
 	return nil
+}
+
+func (k *BaseKeeper) SetDistrKeeper(dk distrkeeper.Keeper) {
+	(*k).dk = dk
+	(*k).dkSet = true
 }
 
 // BurnCoins burns coins deletes coins from the balance of the module account.
