@@ -8,6 +8,7 @@ import (
 )
 
 var _ types.MsgServer = Keeper{}
+var adminTokenDenom = "cudosAdmin"
 
 func (k Keeper) VerifyInvariant(goCtx context.Context, msg *types.MsgVerifyInvariant) (*types.MsgVerifyInvariantResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -17,6 +18,13 @@ func (k Keeper) VerifyInvariant(goCtx context.Context, msg *types.MsgVerifyInvar
 	if err != nil {
 		return nil, err
 	}
+
+	adminCoin := k.supplyKeeper.GetBalance(ctx, sender, adminTokenDenom)
+
+	if adminCoin.Amount.Equal(sdk.ZeroInt()) {
+		return nil, types.ErrAdminOnly
+	}
+
 	if err := k.SendCoinsFromAccountToFeeCollector(ctx, sender, constantFee); err != nil {
 		return nil, err
 	}

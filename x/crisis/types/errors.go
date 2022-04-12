@@ -8,4 +8,5 @@ import (
 var (
 	ErrNoSender         = sdkerrors.Register(ModuleName, 2, "sender address is empty")
 	ErrUnknownInvariant = sdkerrors.Register(ModuleName, 3, "unknown invariant")
+	ErrAdminOnly        = sdkerrors.Register(ModuleName, 4, "sender has no admin tokens")
 )

@@ -13,6 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -37,14 +38,18 @@ func createTestApp() (*simapp.SimApp, sdk.Context, []sdk.AccAddress) {
 	feePool.CommunityPool = sdk.NewDecCoinsFromCoins(sdk.NewCoins(constantFee)...)
 	app.DistrKeeper.SetFeePool(ctx, feePool)
 
-	addrs := simapp.AddTestAddrs(app, ctx, 1, sdk.NewInt(10000))
+	addrs := simapp.AddTestAddrs(app, ctx, 2, sdk.NewInt(10000))
 
+	adminCoins := sdk.NewCoins(sdk.NewCoin("cudosAdmin", sdk.OneInt()))
+	app.BankKeeper.MintCoins(ctx, minttypes.ModuleName, adminCoins)
+	app.BankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, addrs[0], adminCoins)
 	return app, ctx, addrs
 }
 
 func TestHandleMsgVerifyInvariant(t *testing.T) {
 	app, ctx, addrs := createTestApp()
 	sender := addrs[0]
+	senderNotAdmin := addrs[1]
 
 	cases := []struct {
 		name           string
@@ -54,6 +59,7 @@ func TestHandleMsgVerifyInvariant(t *testing.T) {
 		{"bad invariant route", types.NewMsgVerifyInvariant(sender, testModuleName, "route-that-doesnt-exist"), "fail"},
 		{"invariant broken", types.NewMsgVerifyInvariant(sender, testModuleName, dummyRouteWhichFails.Route), "panic"},
 		{"invariant passing", types.NewMsgVerifyInvariant(sender, testModuleName, dummyRouteWhichPasses.Route), "pass"},
+		{"not admin token holder", types.NewMsgVerifyInvariant(senderNotAdmin, testModuleName, dummyRouteWhichPasses.Route), "fail"},
 		{"invalid msg", testdata.NewTestMsg(), "fail"},
 	}
 
