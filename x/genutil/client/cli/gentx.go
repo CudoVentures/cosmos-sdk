@@ -110,6 +110,10 @@ $ %s gentx my-key-name 1000000stake --home=/path/to/home/dir --keyring-backend=o
 				moniker = m
 			}
 
+			if moniker == "" {
+				return errors.New("moniker cannot be empty")
+			}
+
 			// set flags for creating a gentx
 			createValCfg, err := cli.PrepareConfigForTxCreateValidator(cmd.Flags(), moniker, nodeID, genDoc.ChainID, valPubKey)
 			if err != nil {
