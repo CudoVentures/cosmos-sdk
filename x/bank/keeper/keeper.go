@@ -67,9 +67,7 @@ type MintingRestrictionFn func(ctx sdk.Context, coins sdk.Coins) error
 func (k BaseKeeper) GetPaginatedTotalSupply(ctx sdk.Context, pagination *query.PageRequest) (sdk.Coins, *query.PageResponse, error) {
 	store := ctx.KVStore(k.storeKey)
 	supplyStore := prefix.NewStore(store, types.SupplyKey)
-
 	supply := sdk.NewCoins()
-
 	pageRes, err := query.Paginate(supplyStore, pagination, func(key, value []byte) error {
 		var amount sdk.Int
 		err := amount.Unmarshal(value)
@@ -78,6 +76,8 @@ func (k BaseKeeper) GetPaginatedTotalSupply(ctx sdk.Context, pagination *query.P
 		}
 
 		// `Add` omits the 0 coins addition to the `supply`.
+		fmt.Println("WFEFWEFWEFWEFWEFWEF")
+		fmt.Println(string(key))
 		supply = supply.Add(sdk.NewCoin(string(key), amount))
 		return nil
 	})
@@ -419,28 +419,14 @@ func (k BaseKeeper) MintCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 		return err
 	}
 
-	var resultString string
-
 	for _, amount := range amounts {
 		supply := k.GetSupply(ctx, amount.GetDenom())
 		supply = supply.Add(amount)
 		k.setSupply(ctx, supply)
-
-		if k.dkSet && amount.Denom == burnDenom {
-			fp := k.dk.GetFeePool(ctx)
-			fp.CommunityPool = fp.CommunityPool.Add(sdk.NewDecCoinFromCoin(amount))
-			k.dk.SetFeePool(ctx, fp)
-			resultString = "moved tokens from module account to community pool"
-		} else {
-			supply := k.GetSupply(ctx, amount.GetDenom())
-			supply = supply.Sub(amount)
-			k.setSupply(ctx, supply)
-			resultString = "burned tokens from module account"
-		}
 	}
 
 	logger := k.Logger(ctx)
-	logger.Info(resultString, "amount", amounts.String(), "from", moduleName)
+	logger.Info("minted coins from module account", "amount", amounts.String(), "from", moduleName)
 
 	// emit mint event
 	ctx.EventManager().EmitEvent(
@@ -472,14 +458,23 @@ func (k BaseKeeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 		return err
 	}
 
+	var resultString string
 	for _, amount := range amounts {
-		supply := k.GetSupply(ctx, amount.GetDenom())
-		supply = supply.Sub(amount)
-		k.setSupply(ctx, supply)
+		if k.dkSet && amount.Denom == burnDenom {
+			fp := k.dk.GetFeePool(ctx)
+			fp.CommunityPool = fp.CommunityPool.Add(sdk.NewDecCoinFromCoin(amount))
+			k.dk.SetFeePool(ctx, fp)
+			resultString = "moved tokens from module account to community pool"
+		} else {
+			supply := k.GetSupply(ctx, amount.GetDenom())
+			supply = supply.Sub(amount)
+			k.setSupply(ctx, supply)
+			resultString = "burned tokens from module account"
+		}
 	}
 
 	logger := k.Logger(ctx)
-	logger.Info("burned tokens from module account", "amount", amounts.String(), "from", moduleName)
+	logger.Info(resultString, "amount", amounts.String(), "from", moduleName)
 
 	// emit burn event
 	ctx.EventManager().EmitEvent(
