@@ -76,8 +76,6 @@ func (k BaseKeeper) GetPaginatedTotalSupply(ctx sdk.Context, pagination *query.P
 		}
 
 		// `Add` omits the 0 coins addition to the `supply`.
-		fmt.Println("WFEFWEFWEFWEFWEFWEF")
-		fmt.Println(string(key))
 		supply = supply.Add(sdk.NewCoin(string(key), amount))
 		return nil
 	})
