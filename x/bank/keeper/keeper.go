@@ -419,6 +419,12 @@ func (k BaseKeeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 
 	for _, amount := range amounts {
 		if k.dkSet && amount.Denom == "acudos" {
+			// transfer collected fees to the distribution module account
+			err := k.addCoins(ctx, k.dk.GetDistributionAccount(ctx).GetAddress(), sdk.Coins{amount})
+			if err != nil {
+				panic(err)
+			}
+
 			fp := k.dk.GetFeePool(ctx)
 			fp.CommunityPool = fp.CommunityPool.Add(sdk.NewDecCoinFromCoin(amount))
 			k.dk.SetFeePool(ctx, fp)
