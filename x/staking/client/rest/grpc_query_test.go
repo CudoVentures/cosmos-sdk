@@ -1,3 +1,4 @@
+//go:build norace
 // +build norace
 
 package rest_test
@@ -420,6 +421,8 @@ func (s *IntegrationTestSuite) TestQueryDelegatorDelegationsGRPC() {
 	info, _, err := val.ClientCtx.Keyring.NewMnemonic("test", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 	newAddr := sdk.AccAddress(info.GetPubKey().Address())
+	amount, _ := sdk.NewDecFromStr("2000000000000000000000000")
+	intAmount, _ := sdk.NewIntFromString("2000000000000000000000000")
 
 	testCases := []struct {
 		name         string
@@ -455,7 +458,7 @@ func (s *IntegrationTestSuite) TestQueryDelegatorDelegationsGRPC() {
 			&types.QueryDelegatorDelegationsResponse{},
 			&types.QueryDelegatorDelegationsResponse{
 				DelegationResponses: types.DelegationResponses{
-					types.NewDelegationResp(val.Address, val.ValAddress, sdk.NewDecFromInt(cli.DefaultTokens), sdk.NewCoin(sdk.DefaultBondDenom, cli.DefaultTokens)),
+					types.NewDelegationResp(val.Address, val.ValAddress, amount, sdk.NewCoin(sdk.DefaultBondDenom, intAmount)),
 				},
 				Pagination: &query.PageResponse{Total: 1},
 			},

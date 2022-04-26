@@ -67,8 +67,8 @@ func TestMsgCreateValidator(t *testing.T) {
 		bond                                                       sdk.Coin
 		expectPass                                                 bool
 	}{
-		{"basic good", "a", "b", "c", "d", "e", commission1, sdk.OneInt(), valAddr1, pk1, coinPos, true},
-		{"partial description", "", "", "c", "", "", commission1, sdk.OneInt(), valAddr1, pk1, coinPos, true},
+		{"basic good", "a", "b", "c", "d", "e", commission1, msd, valAddr1, pk1, coinPos, true},
+		{"partial description", "", "", "c", "", "", commission1, msd, valAddr1, pk1, coinPos, true},
 		{"basic good", "a", "b", "c", "d", "e", commission1, msd, valAddr1, pk1, coinPos, true},
 		{"partial description", "", "", "c", "", "", commission1, msd2, valAddr1, pk1, coinPos, false},
 		{"empty pubkey", "a", "b", "c", "d", "e", commission1, sdk.OneInt(), valAddr1, emptyPubkey, coinPos, false},

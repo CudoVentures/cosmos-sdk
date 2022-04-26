@@ -1,3 +1,4 @@
+//go:build norace
 // +build norace
 
 package rest_test
@@ -89,6 +90,7 @@ func (s *IntegrationTestSuite) TestQueryBalancesRequestHandlerFn() {
 			&sdk.Coins{},
 			sdk.NewCoins(
 				sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
+				sdk.NewCoin("cudosAdmin", 1),
 				sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
 			),
 		},
@@ -99,6 +101,7 @@ func (s *IntegrationTestSuite) TestQueryBalancesRequestHandlerFn() {
 			&sdk.Coins{},
 			sdk.NewCoins(
 				sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
+				sdk.NewCoin("cudosAdmin", 1),
 				sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
 			),
 		},
@@ -160,7 +163,7 @@ func (s *IntegrationTestSuite) TestTotalSupplyHandlerFn() {
 			&types.QueryTotalSupplyResponse{
 				Supply: sdk.NewCoins(
 					sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
-					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(10))),
+					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(205_972_593_683_965_399))),
 				),
 				Pagination: &query.PageResponse{Total: 2},
 			},
@@ -169,7 +172,7 @@ func (s *IntegrationTestSuite) TestTotalSupplyHandlerFn() {
 			"total supply of a specific denom",
 			fmt.Sprintf("%s/bank/total/%s?height=1", baseURL, s.cfg.BondDenom),
 			&sdk.Coin{},
-			sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(10))),
+			sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(205_972_593_683_965_399))),
 		},
 		{
 			"total supply of a bogus denom",
