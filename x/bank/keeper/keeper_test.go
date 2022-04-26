@@ -26,8 +26,8 @@ import (
 const (
 	fooDenom     = "foo"
 	barDenom     = "bar"
-	initialPower = int64(100)
 	acudosDenom  = "acudos"
+	initialPower = int64(100)
 	holder       = "holder"
 	multiPerm    = "multiple permissions account"
 	randomPerm   = "random permission"
@@ -303,7 +303,6 @@ func (suite *IntegrationTestSuite) TestSupply_BurnCoins() {
 
 	err = keeper.BurnCoins(ctx, multiPermAcc.GetName(), initCoins)
 	suite.Require().NoError(err)
-
 	supplyAfterBurn, _, err = keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
 	suite.Require().NoError(err)
 
@@ -334,7 +333,6 @@ func (suite *IntegrationTestSuite) TestSupply_BurnCoinsToCommunityPool() {
 	require.NoError(err)
 
 	dbBefore := keeper.GetBalance(ctx, suite.app.DistrKeeper.GetDistributionAccount(ctx).GetAddress(), acudosDenom)
-
 	err = keeper.BurnCoins(ctx, authtypes.Burner, totalSupplyAcudos)
 	require.NoError(err)
 

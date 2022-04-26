@@ -4,6 +4,7 @@ package server
 
 import (
 	"fmt"
+	_ "unsafe"
 
 	_ "unsafe"
 

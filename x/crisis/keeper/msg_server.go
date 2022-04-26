@@ -10,6 +10,8 @@ import (
 var _ types.MsgServer = Keeper{}
 var adminTokenDenom = "cudosAdmin"
 
+var adminTokenDenom = "cudosAdmin"
+
 func (k Keeper) VerifyInvariant(goCtx context.Context, msg *types.MsgVerifyInvariant) (*types.MsgVerifyInvariantResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	constantFee := sdk.NewCoins(k.GetConstantFee(ctx))

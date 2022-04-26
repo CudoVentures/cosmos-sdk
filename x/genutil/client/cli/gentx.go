@@ -109,6 +109,9 @@ $ %s gentx my-key-name 1000000stake --home=/path/to/home/dir --keyring-backend=o
 			if m, _ := cmd.Flags().GetString(cli.FlagMoniker); m != "" {
 				moniker = m
 			}
+			if moniker == "" {
+				return errors.New("moniker cannot be empty")
+			}
 
 			if moniker == "" {
 				return errors.New("moniker cannot be empty")

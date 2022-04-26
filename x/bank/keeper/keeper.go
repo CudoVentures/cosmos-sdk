@@ -434,11 +434,6 @@ func (k BaseKeeper) MintCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 	return nil
 }
 
-func (k *BaseKeeper) SetDistrKeeper(dk distrkeeper.Keeper) {
-	(*k).dk = dk
-	(*k).dkSet = true
-}
-
 // BurnCoins burns coins deletes coins from the balance of the module account.
 // It will panic if the module account does not exist or is unauthorized.
 func (k BaseKeeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Coins) error {
@@ -486,6 +481,11 @@ func (k BaseKeeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 	)
 
 	return nil
+}
+
+func (k *BaseKeeper) SetDistrKeeper(dk distrkeeper.Keeper) {
+	(*k).dk = dk
+	(*k).dkSet = true
 }
 
 // setSupply sets the supply for the given coin
