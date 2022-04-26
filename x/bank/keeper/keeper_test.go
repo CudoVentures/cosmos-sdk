@@ -27,6 +27,7 @@ const (
 	fooDenom     = "foo"
 	barDenom     = "bar"
 	initialPower = int64(100)
+	acudosDenom  = "acudos"
 	holder       = "holder"
 	multiPerm    = "multiple permissions account"
 	randomPerm   = "random permission"
@@ -277,10 +278,16 @@ func (suite *IntegrationTestSuite) TestSupply_BurnCoins() {
 	err = keeper.BurnCoins(ctx, authtypes.Burner, supplyAfterInflation)
 	suite.Require().Error(err, "insufficient coins")
 
+	dbBefore := keeper.GetBalance(ctx, suite.app.DistrKeeper.GetDistributionAccount(ctx).GetAddress(), acudosDenom)
+
 	err = keeper.BurnCoins(ctx, authtypes.Burner, initCoins)
 	suite.Require().NoError(err)
 	supplyAfterBurn, _, err := keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
 	suite.Require().NoError(err)
+
+	dbAfter := keeper.GetBalance(ctx, suite.app.DistrKeeper.GetDistributionAccount(ctx).GetAddress(), acudosDenom)
+	suite.Require().Equal(dbBefore, dbAfter, "destribution module balance shouldn't change when burning non acudos")
+
 	suite.Require().Equal(sdk.NewCoins().String(), getCoinsByName(ctx, keeper, authKeeper, authtypes.Burner).String())
 	suite.Require().Equal(supplyAfterInflation.Sub(initCoins), supplyAfterBurn)
 
@@ -310,7 +317,7 @@ func (suite *IntegrationTestSuite) TestSupply_BurnCoinsToCommunityPool() {
 
 	initialPower := int64(100)
 	initTokens := suite.app.StakingKeeper.TokensFromConsensusPower(ctx, initialPower)
-	totalSupplyAcudos := sdk.NewCoins(sdk.NewCoin("acudos", initTokens))
+	totalSupplyAcudos := sdk.NewCoins(sdk.NewCoin(acudosDenom, initTokens))
 	totalSupplyFoo := sdk.NewCoins(sdk.NewCoin("foo", initTokens))
 
 	// add module accounts to supply keeper
@@ -326,6 +333,8 @@ func (suite *IntegrationTestSuite) TestSupply_BurnCoinsToCommunityPool() {
 	supplyBeforeBurn, _, err := keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
 	require.NoError(err)
 
+	dbBefore := keeper.GetBalance(ctx, suite.app.DistrKeeper.GetDistributionAccount(ctx).GetAddress(), acudosDenom)
+
 	err = keeper.BurnCoins(ctx, authtypes.Burner, totalSupplyAcudos)
 	require.NoError(err)
 
@@ -334,8 +343,11 @@ func (suite *IntegrationTestSuite) TestSupply_BurnCoinsToCommunityPool() {
 	require.Equal(sdk.NewCoins().String(), getCoinsByName(ctx, keeper, authKeeper, authtypes.Burner).String())
 	require.Equal(supplyBeforeBurn, supplyAfterBurn)
 
+	dbAfter := keeper.GetBalance(ctx, suite.app.DistrKeeper.GetDistributionAccount(ctx).GetAddress(), acudosDenom)
+	require.Equal(dbBefore.Add(totalSupplyAcudos[0]), dbAfter, "distribution module balance not increased correctly")
+
 	cp := suite.app.DistrKeeper.GetFeePool(ctx).CommunityPool
-	require.Equal(sdk.NewDecCoinsFromCoins(sdk.NewCoin("acudos", initTokens)), cp)
+	require.Equal(sdk.NewDecCoinsFromCoins(sdk.NewCoin(acudosDenom, initTokens)), cp)
 
 	//Test that everything other than acudos is still being burned
 
@@ -356,7 +368,7 @@ func (suite *IntegrationTestSuite) TestSupply_BurnCoinsToCommunityPool() {
 	require.Equal(supplyAfterBurn, totalSupplyAcudos)
 
 	cp = suite.app.DistrKeeper.GetFeePool(ctx).CommunityPool
-	require.Equal(sdk.NewDecCoinsFromCoins(sdk.NewCoin("acudos", initTokens)), cp)
+	require.Equal(sdk.NewDecCoinsFromCoins(sdk.NewCoin(acudosDenom, initTokens)), cp)
 }
 
 func (suite *IntegrationTestSuite) TestSendCoinsNewAccount() {
