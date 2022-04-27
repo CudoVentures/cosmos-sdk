@@ -307,7 +307,7 @@ func New(t *testing.T, cfg Config) *Network {
 		balances := sdk.NewCoins(
 			sdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), cfg.AccountTokens),
 			sdk.NewCoin("cudosAdmin", sdk.OneInt()),
-			sdk.NewCoin(cfg.BondDenom, cfg.StakingTokens.Add(sdk.TokensFromConsensusPower(1000000, sdk.DefaultPowerReduction))),
+			sdk.NewCoin(cfg.BondDenom, cfg.StakingTokens),
 		)
 
 		genFiles = append(genFiles, tmCfg.GenesisFile())

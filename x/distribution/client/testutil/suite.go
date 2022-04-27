@@ -191,7 +191,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryValidatorCommission() {
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			},
 			false,
-			`{"commission":[{"denom":"stake","amount":"10247929222743196612.180000000000000000"}]}`,
+			`{"commission":[{"denom":"stake","amount":"9316299293402906011.340000000000000000"}]}`,
 		},
 		{
 			"text output",
@@ -202,7 +202,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryValidatorCommission() {
 			},
 			false,
 			`commission:
-- amount: "10247929222743196612.180000000000000000"
+- amount: "9316299293402906011.340000000000000000"
   denom: stake`,
 		},
 	}
@@ -344,7 +344,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDelegatorRewards() {
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			},
 			false,
-			fmt.Sprintf(`{"rewards":[{"validator_address":"%s","reward":[{"denom":"stake","amount":"8539942372024000000.000000000000000000"}]}],"total":[{"denom":"stake","amount":"8539942372024000000.000000000000000000"}]}`, valAddr.String()),
+			fmt.Sprintf(`{"rewards":[{"validator_address":"%s","reward":[{"denom":"stake","amount":"7763583974568000000.000000000000000000"}]}],"total":[{"denom":"stake","amount":"7763583974568000000.000000000000000000"}]}`, valAddr.String()),
 		},
 		{
 			"json output (specific validator)",
@@ -354,7 +354,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDelegatorRewards() {
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			},
 			false,
-			`{"rewards":[{"denom":"stake","amount":"8539942372024000000.000000000000000000"}]}`,
+			`{"rewards":[{"denom":"stake","amount":"7763583974568000000.000000000000000000"}]}`,
 		},
 		{
 			"text output",
@@ -366,11 +366,11 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDelegatorRewards() {
 			false,
 			fmt.Sprintf(`rewards:
 - reward:
-  - amount: "8539942372024000000.000000000000000000"
+  - amount: "7763583974568000000.000000000000000000"
     denom: stake
   validator_address: %s
 total:
-- amount: "8539942372024000000.000000000000000000"
+- amount: "7763583974568000000.000000000000000000"
   denom: stake`, valAddr.String()),
 		},
 		{
@@ -382,7 +382,7 @@ total:
 			},
 			false,
 			`rewards:
-- amount: "8539942372024000000.000000000000000000"
+- amount: "7763583974568000000.000000000000000000"
   denom: stake`,
 		},
 	}
@@ -419,13 +419,13 @@ func (s *IntegrationTestSuite) TestGetCmdQueryCommunityPool() {
 		{
 			"json output",
 			[]string{fmt.Sprintf("--%s=3", flags.FlagHeight), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
-			`{"pool":[{"denom":"stake","amount":"104570706354522414.400000000000000000"}]}`,
+			`{"pool":[{"denom":"stake","amount":"95064278504111285.800000000000000000"}]}`,
 		},
 		{
 			"text output",
 			[]string{fmt.Sprintf("--%s=text", tmcli.OutputFlag), fmt.Sprintf("--%s=3", flags.FlagHeight)},
 			`pool:
-- amount: "104570706354522414.400000000000000000"
+- amount: "95064278504111285.800000000000000000"
   denom: stake`,
 		},
 	}

@@ -75,6 +75,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().Contains(out.String(), `"code":0`)
 
 	s.grantee = newAddr
+	fmt.Println(s.grantee)
 	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 }
@@ -255,7 +256,7 @@ func (s *IntegrationTestSuite) TestQueryGranterGrantsGRPC() {
 		},
 		{
 			"no authorizations found",
-			fmt.Sprintf("%s/cosmos/authz/v1beta1/grants/granter/%s", val.APIAddress, grantee),
+			fmt.Sprintf("%s/cosmos/authz/v1beta1/grants/granter/%s", val.APIAddress, grantee.string()),
 			false,
 			"",
 			0,

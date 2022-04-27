@@ -90,7 +90,7 @@ func (s *IntegrationTestSuite) TestQueryBalancesRequestHandlerFn() {
 			&sdk.Coins{},
 			sdk.NewCoins(
 				sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
-				sdk.NewCoin("cudosAdmin", 1),
+				sdk.NewCoin("cudosAdmin", sdk.OneInt()),
 				sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
 			),
 		},
@@ -101,7 +101,7 @@ func (s *IntegrationTestSuite) TestQueryBalancesRequestHandlerFn() {
 			&sdk.Coins{},
 			sdk.NewCoins(
 				sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
-				sdk.NewCoin("cudosAdmin", 1),
+				sdk.NewCoin("cudosAdmin", sdk.OneInt()),
 				sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
 			),
 		},
@@ -162,10 +162,11 @@ func (s *IntegrationTestSuite) TestTotalSupplyHandlerFn() {
 			&types.QueryTotalSupplyResponse{},
 			&types.QueryTotalSupplyResponse{
 				Supply: sdk.NewCoins(
+					sdk.NewCoin("cudosAdmin", sdk.OneInt()),
 					sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
 					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(205_972_593_683_965_399))),
 				),
-				Pagination: &query.PageResponse{Total: 2},
+				Pagination: &query.PageResponse{Total: 3},
 			},
 		},
 		{
