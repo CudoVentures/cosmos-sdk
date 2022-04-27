@@ -207,7 +207,7 @@ func (s *IntegrationTestSuite) TestQueryValidatorDelegationsGRPC() {
 			&types.QueryValidatorDelegationsResponse{},
 			&types.QueryValidatorDelegationsResponse{
 				DelegationResponses: types.DelegationResponses{
-					types.NewDelegationResp(val.Address, val.ValAddress, sdk.NewDecFromInt(cli.DefaultTokens), sdk.NewCoin(sdk.DefaultBondDenom, cli.DefaultTokens)),
+					types.NewDelegationResp(val.Address, val.ValAddress, sdk.NewDecFromInt(cli.DefaultTokens.Mul(sdk.NewInt(2))), sdk.NewCoin(sdk.DefaultBondDenom, cli.DefaultTokens.Mul(sdk.NewInt(2)))),
 				},
 				Pagination: &query.PageResponse{Total: 1},
 			},
@@ -421,8 +421,8 @@ func (s *IntegrationTestSuite) TestQueryDelegatorDelegationsGRPC() {
 	info, _, err := val.ClientCtx.Keyring.NewMnemonic("test", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 	newAddr := sdk.AccAddress(info.GetPubKey().Address())
-	amount, _ := sdk.NewDecFromStr("2000000000000000000000000")
-	intAmount, _ := sdk.NewIntFromString("2000000000000000000000000")
+	amount, _ := sdk.NewDecFromStr("4000000000000000000000000")
+	intAmount, _ := sdk.NewIntFromString("4000000000000000000000000")
 
 	testCases := []struct {
 		name         string
@@ -807,8 +807,8 @@ func (s *IntegrationTestSuite) TestQueryPoolGRPC() {
 			&types.QueryPoolResponse{},
 			&types.QueryPoolResponse{
 				Pool: types.Pool{
-					NotBondedTokens: cli.DefaultTokens.Sub(sdk.NewInt(10)),
-					BondedTokens:    cli.DefaultTokens.Add(sdk.NewInt(10)),
+					NotBondedTokens: sdk.NewInt(10),
+					BondedTokens:    cli.DefaultTokens.Mul(sdk.NewInt(4)).Sub(sdk.NewInt(10)),
 				},
 			},
 		},
@@ -820,6 +820,8 @@ func (s *IntegrationTestSuite) TestQueryPoolGRPC() {
 		s.Run(tc.name, func() {
 			s.Require().NoError(err)
 			s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, tc.respType))
+			fmt.Println(tc.expected)
+			fmt.Println(tc.respType)
 			s.Require().Equal(tc.expected, tc.respType)
 		})
 	}

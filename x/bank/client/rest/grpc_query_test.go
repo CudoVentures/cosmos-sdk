@@ -38,7 +38,7 @@ func (s *IntegrationTestSuite) TestTotalSupplyGRPCHandler() {
 				Supply: sdk.NewCoins(
 					sdk.NewCoin("cudosAdmin", sdk.OneInt()),
 					sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
-					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(205_972_593_683_965_399))),
+					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(205_972_583_942_358_070))),
 				),
 				Pagination: &query.PageResponse{
 					Total: 3,
@@ -53,7 +53,7 @@ func (s *IntegrationTestSuite) TestTotalSupplyGRPCHandler() {
 			},
 			&types.QuerySupplyOfResponse{},
 			&types.QuerySupplyOfResponse{
-				Amount: sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(205_972_593_683_965_399))),
+				Amount: sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(205_972_583_942_358_070))),
 			},
 		},
 		{
@@ -64,7 +64,7 @@ func (s *IntegrationTestSuite) TestTotalSupplyGRPCHandler() {
 			},
 			&types.QuerySupplyOfResponse{},
 			&types.QuerySupplyOfResponse{
-				Amount: sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(411_945_214_503_179_629))),
+				Amount: sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(411_945_185_278_357_240))),
 			},
 		},
 		{
@@ -75,7 +75,7 @@ func (s *IntegrationTestSuite) TestTotalSupplyGRPCHandler() {
 			},
 			&types.QuerySupplyOfResponse{},
 			&types.QuerySupplyOfResponse{
-				Amount: sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(205_972_593_683_965_399))),
+				Amount: sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(205_972_583_942_358_070))),
 			},
 		},
 		{
@@ -228,7 +228,7 @@ func (s *IntegrationTestSuite) TestBalancesGRPCHandler() {
 				Balances: sdk.NewCoins(
 					sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
 					sdk.NewCoin("cudosAdmin", sdk.OneInt()),
-					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
+					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens.Mul(sdk.NewInt(2)))),
 				),
 				Pagination: &query.PageResponse{
 					Total: 3,
@@ -242,7 +242,7 @@ func (s *IntegrationTestSuite) TestBalancesGRPCHandler() {
 			&types.QueryBalanceResponse{
 				Balance: &sdk.Coin{
 					Denom:  s.cfg.BondDenom,
-					Amount: s.cfg.StakingTokens.Sub(s.cfg.BondedTokens),
+					Amount: s.cfg.StakingTokens.Sub(s.cfg.BondedTokens.Mul(sdk.NewInt(2))),
 				},
 			},
 		},

@@ -320,7 +320,7 @@ func New(t *testing.T, cfg Config) *Network {
 		createValMsg, err := stakingtypes.NewMsgCreateValidator(
 			sdk.ValAddress(addr),
 			valPubKeys[i],
-			sdk.NewCoin(cfg.BondDenom, cfg.BondedTokens),
+			sdk.NewCoin(cfg.BondDenom, cfg.BondedTokens.Mul(sdk.NewInt(2))),
 			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
 			stakingtypes.NewCommissionRates(commission, sdk.OneDec(), sdk.OneDec()),
 			cfg.MinSelfDelegation,
