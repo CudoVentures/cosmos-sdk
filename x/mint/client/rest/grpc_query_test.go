@@ -60,7 +60,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 func (s *IntegrationTestSuite) TestQueryGRPC() {
 	val := s.network.Validators[0]
 	baseURL := val.APIAddress
-	amount, _ := sdk.NewDecFromStr("11000000000000000000000000")
+	amount, _ := sdk.NewDecFromStr("10000000000000000000000000")
 
 	testCases := []struct {
 		name     string

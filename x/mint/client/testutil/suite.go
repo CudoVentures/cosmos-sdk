@@ -139,12 +139,12 @@ func (s *IntegrationTestSuite) TestGetCmdQueryAnnualProvisions() {
 		{
 			"json output",
 			[]string{fmt.Sprintf("--%s=1", flags.FlagHeight), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
-			`11000000000000000000000000.000000000000000000`,
+			`10000000000000000000000000.000000000000000000`,
 		},
 		{
 			"text output",
 			[]string{fmt.Sprintf("--%s=1", flags.FlagHeight), fmt.Sprintf("--%s=text", tmcli.OutputFlag)},
-			`11000000000000000000000000.000000000000000000`,
+			`10000000000000000000000000.000000000000000000`,
 		},
 	}
 
