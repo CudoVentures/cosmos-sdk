@@ -111,8 +111,16 @@ func SimulateMsgCreateValidator(ak types.AccountKeeper, bk types.BankKeeper, k k
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateValidator, "balance is negative"), nil, nil
 		}
 
-		amount, err := simtypes.RandPositiveInt(r, balance)
-		amount = amount.Add(sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction))
+		msd := sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction)
+		var balanceMinusMsd = balance.Sub(msd)
+
+		if balanceMinusMsd.IsNegative() {
+			balanceMinusMsd = sdk.OneInt()
+		}
+
+		amount, err := simtypes.RandPositiveInt(r, balanceMinusMsd)
+		amount = amount.Add(msd)
+
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateValidator, "unable to generate positive amount"), nil, err
 		}
