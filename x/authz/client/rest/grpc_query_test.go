@@ -236,15 +236,8 @@ func (s *IntegrationTestSuite) TestQueryGrantsGRPC() {
 
 func (s *IntegrationTestSuite) TestQueryGranterGrantsGRPC() {
 	val := s.network.Validators[0]
-	grantee := s.grantee[1]
 	require := s.Require()
 
-	fmt.Println(grantee)
-	fmt.Println(grantee)
-	fmt.Println(grantee)
-	fmt.Println(grantee)
-	fmt.Println(grantee)
-	fmt.Println(grantee)
 	testCases := []struct {
 		name      string
 		url       string
@@ -261,7 +254,7 @@ func (s *IntegrationTestSuite) TestQueryGranterGrantsGRPC() {
 		},
 		{
 			"no authorizations found",
-			fmt.Sprintf("%s/cosmos/authz/v1beta1/grants/granter/%s", val.APIAddress, "grantee.string()"),
+			fmt.Sprintf("%s/cosmos/authz/v1beta1/grants/granter/%s", val.APIAddress, s.grantee.String()),
 			false,
 			"",
 			0,
@@ -282,7 +275,6 @@ func (s *IntegrationTestSuite) TestQueryGranterGrantsGRPC() {
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errMsg)
 			} else {
-				fmt.Println(grantee)
 				var authorizations authz.QueryGranterGrantsResponse
 				err := val.ClientCtx.Codec.UnmarshalJSON(resp, &authorizations)
 				require.NoError(err)
@@ -296,7 +288,6 @@ func (s *IntegrationTestSuite) TestQueryGranterGrantsGRPC() {
 
 func (s *IntegrationTestSuite) TestQueryGranteeGrantsGRPC() {
 	val := s.network.Validators[0]
-	grantee := s.grantee[1]
 	require := s.Require()
 
 	testCases := []struct {
@@ -322,7 +313,7 @@ func (s *IntegrationTestSuite) TestQueryGranteeGrantsGRPC() {
 		},
 		{
 			"valid query",
-			fmt.Sprintf("%s/cosmos/authz/v1beta1/grants/grantee/%s", val.APIAddress, "grantee"),
+			fmt.Sprintf("%s/cosmos/authz/v1beta1/grants/grantee/%s", val.APIAddress, s.grantee.String()),
 			false,
 			"",
 			1,
@@ -332,12 +323,10 @@ func (s *IntegrationTestSuite) TestQueryGranteeGrantsGRPC() {
 		s.Run(tc.name, func() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
-
 			if tc.expectErr {
 				require.Contains(string(resp), tc.errMsg)
 			} else {
 				var authorizations authz.QueryGranteeGrantsResponse
-				fmt.Println(grantee)
 				err := val.ClientCtx.Codec.UnmarshalJSON(resp, &authorizations)
 				require.NoError(err)
 				// FIXME: https://github.com/cosmos/cosmos-sdk/issues/10965
