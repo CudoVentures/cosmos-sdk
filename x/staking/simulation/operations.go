@@ -112,19 +112,18 @@ func SimulateMsgCreateValidator(ak types.AccountKeeper, bk types.BankKeeper, k k
 		}
 
 		msd := sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction)
-		var balanceMinusMsd = balance.Sub(msd)
-
-		if balanceMinusMsd.IsNegative() {
-			balanceMinusMsd = sdk.OneInt()
+		if balance.LTE(msd) {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateValidator, "balance is less than MinimumSelfDelegation"), nil, nil
 		}
 
+		var balanceMinusMsd = balance.Sub(msd)
 		amount, err := simtypes.RandPositiveInt(r, balanceMinusMsd)
-		amount = amount.Add(msd)
 
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateValidator, "unable to generate positive amount"), nil, err
 		}
 
+		amount = amount.Add(msd)
 		selfDelegation := sdk.NewCoin(denom, amount)
 
 		account := ak.GetAccount(ctx, simAccount.Address)
