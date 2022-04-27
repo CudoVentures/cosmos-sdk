@@ -129,7 +129,7 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 		{
 			"invalid transaction (missing pubkey)",
 			[]string{
-				fmt.Sprintf("--%s=%dstake", cli.FlagAmount, 100),
+				fmt.Sprintf("--%s=%sstake", cli.FlagAmount, "2000000000000000000000000"),
 				fmt.Sprintf("--%s=AFAF00C4", cli.FlagIdentity),
 				fmt.Sprintf("--%s=https://newvalidator.io", cli.FlagWebsite),
 				fmt.Sprintf("--%s=contact@newvalidator.io", cli.FlagSecurityContact),
@@ -149,7 +149,7 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 			"invalid transaction (missing moniker)",
 			[]string{
 				fmt.Sprintf("--%s=%s", cli.FlagPubKey, consPubKeyBz),
-				fmt.Sprintf("--%s=%dstake", cli.FlagAmount, 100),
+				fmt.Sprintf("--%s=%sstake", cli.FlagAmount, "2000000000000000000000000"),
 				fmt.Sprintf("--%s=AFAF00C4", cli.FlagIdentity),
 				fmt.Sprintf("--%s=https://newvalidator.io", cli.FlagWebsite),
 				fmt.Sprintf("--%s=contact@newvalidator.io", cli.FlagSecurityContact),
@@ -169,7 +169,7 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 			"valid transaction",
 			[]string{
 				fmt.Sprintf("--%s=%s", cli.FlagPubKey, consPubKeyBz),
-				fmt.Sprintf("--%s=%stake", cli.FlagAmount, "2000000000000000000000000"),
+				fmt.Sprintf("--%s=%sstake", cli.FlagAmount, "2000000000000000000000000"),
 				fmt.Sprintf("--%s=NewValidator", cli.FlagMoniker),
 				fmt.Sprintf("--%s=AFAF00C4", cli.FlagIdentity),
 				fmt.Sprintf("--%s=https://newvalidator.io", cli.FlagWebsite),
