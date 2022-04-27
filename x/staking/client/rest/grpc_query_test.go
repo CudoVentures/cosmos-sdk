@@ -807,8 +807,8 @@ func (s *IntegrationTestSuite) TestQueryPoolGRPC() {
 			&types.QueryPoolResponse{},
 			&types.QueryPoolResponse{
 				Pool: types.Pool{
-					NotBondedTokens: sdk.NewInt(10),
-					BondedTokens:    cli.DefaultTokens.Mul(sdk.NewInt(2)).Sub(sdk.NewInt(10)),
+					NotBondedTokens: cli.DefaultTokens.Sub(sdk.NewInt(10)),
+					BondedTokens:    cli.DefaultTokens.Add(sdk.NewInt(10)),
 				},
 			},
 		},
