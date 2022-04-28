@@ -47,7 +47,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 func (s *IntegrationTestSuite) TestGenTxCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
-	amountValue, _ := sdk.NewIntFromString("2000000000000000000000000")
+	amountValue := sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction)
 	amount := sdk.NewCoin(s.cfg.BondDenom, amountValue)
 
 	tests := []struct {
@@ -59,6 +59,7 @@ func (s *IntegrationTestSuite) TestGenTxCmd() {
 			name: "invalid commission rate returns error",
 			args: []string{
 				fmt.Sprintf("--%s=%s", flags.FlagChainID, s.network.Config.ChainID),
+				fmt.Sprintf("--%s=%s", stakingcli.FlagMinSelfDelegation, amountValue.String()),
 				fmt.Sprintf("--%s=1", stakingcli.FlagCommissionRate),
 				val.Moniker,
 				amount.String(),
@@ -69,6 +70,7 @@ func (s *IntegrationTestSuite) TestGenTxCmd() {
 			name: "valid gentx",
 			args: []string{
 				fmt.Sprintf("--%s=%s", flags.FlagChainID, s.network.Config.ChainID),
+				fmt.Sprintf("--%s=%s", stakingcli.FlagMinSelfDelegation, amountValue.String()),
 				val.Moniker,
 				amount.String(),
 			},
@@ -78,6 +80,7 @@ func (s *IntegrationTestSuite) TestGenTxCmd() {
 			name: "invalid pubkey",
 			args: []string{
 				fmt.Sprintf("--%s=%s", flags.FlagChainID, s.network.Config.ChainID),
+				fmt.Sprintf("--%s=%s", stakingcli.FlagMinSelfDelegation, amountValue.String()),
 				fmt.Sprintf("--%s={\"key\":\"BOIkjkFruMpfOFC9oNPhiJGfmY2pHF/gwHdLDLnrnS0=\"}", stakingcli.FlagPubKey),
 				val.Moniker,
 				amount.String(),
@@ -88,6 +91,7 @@ func (s *IntegrationTestSuite) TestGenTxCmd() {
 			name: "valid pubkey flag",
 			args: []string{
 				fmt.Sprintf("--%s=%s", flags.FlagChainID, s.network.Config.ChainID),
+				fmt.Sprintf("--%s=%s", stakingcli.FlagMinSelfDelegation, amountValue.String()),
 				fmt.Sprintf("--%s={\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"BOIkjkFruMpfOFC9oNPhiJGfmY2pHF/gwHdLDLnrnS0=\"}", stakingcli.FlagPubKey),
 				val.Moniker,
 				amount.String(),
