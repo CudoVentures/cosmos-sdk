@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - master
-      
 jobs:
   install-tparse:
     runs-on: ubuntu-latest
