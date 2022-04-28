@@ -2,7 +2,7 @@ package types
 
 import (
 	"bytes"
-	"fmt"
+	fmt "fmt"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"

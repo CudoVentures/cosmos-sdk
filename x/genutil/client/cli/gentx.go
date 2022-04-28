@@ -113,6 +113,10 @@ $ %s gentx my-key-name 1000000stake --home=/path/to/home/dir --keyring-backend=o
 				return errors.New("moniker cannot be empty")
 			}
 
+			if moniker == "" {
+				return errors.New("moniker cannot be empty")
+			}
+
 			// set flags for creating a gentx
 			createValCfg, err := cli.PrepareConfigForTxCreateValidator(cmd.Flags(), moniker, nodeID, genDoc.ChainID, valPubKey)
 			if err != nil {
@@ -164,6 +168,10 @@ $ %s gentx my-key-name 1000000stake --home=/path/to/home/dir --keyring-backend=o
 			// write the unsigned transaction to the buffer
 			w := bytes.NewBuffer([]byte{})
 			clientCtx = clientCtx.WithOutput(w)
+
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
 
 			if err = authclient.PrintUnsignedStdTx(txBldr, clientCtx, []sdk.Msg{msg}); err != nil {
 				return errors.Wrap(err, "failed to print unsigned std tx")

@@ -43,7 +43,6 @@ func createTestApp() (*simapp.SimApp, sdk.Context, []sdk.AccAddress) {
 	adminCoins := sdk.NewCoins(sdk.NewCoin("cudosAdmin", sdk.OneInt()))
 	app.BankKeeper.MintCoins(ctx, minttypes.ModuleName, adminCoins)
 	app.BankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, addrs[0], adminCoins)
-
 	return app, ctx, addrs
 }
 

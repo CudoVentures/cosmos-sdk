@@ -114,7 +114,8 @@ func (s *IntegrationTestSuite) TestGetBalancesCmd() {
 			&types.QueryAllBalancesResponse{
 				Balances: sdk.NewCoins(
 					sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
-					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
+					sdk.NewCoin("cudosAdmin", sdk.OneInt()),
+					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens.Mul(sdk.NewInt(2)))),
 				),
 				Pagination: &query.PageResponse{},
 			},
@@ -129,7 +130,7 @@ func (s *IntegrationTestSuite) TestGetBalancesCmd() {
 			},
 			false,
 			&sdk.Coin{},
-			NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
+			NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens.Mul(sdk.NewInt(2)))),
 		},
 		{
 			"total account balance of a bogus denom",
@@ -182,9 +183,10 @@ func (s *IntegrationTestSuite) TestGetCmdQueryTotalSupply() {
 			expected: &types.QueryTotalSupplyResponse{
 				Supply: sdk.NewCoins(
 					sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
-					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(10))),
+					sdk.NewCoin("cudosAdmin", sdk.OneInt()),
+					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(205_972_583_942_358_070))),
 				),
-				Pagination: &query.PageResponse{Total: 2},
+				Pagination: &query.PageResponse{Total: 0},
 			},
 		},
 		{
@@ -197,7 +199,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryTotalSupply() {
 			respType: &sdk.Coin{},
 			expected: &sdk.Coin{
 				Denom:  s.cfg.BondDenom,
-				Amount: s.cfg.StakingTokens.Add(sdk.NewInt(10)),
+				Amount: s.cfg.StakingTokens.Add(sdk.NewInt(205_972_583_942_358_070)),
 			},
 		},
 		{

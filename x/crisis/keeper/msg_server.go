@@ -8,7 +8,6 @@ import (
 )
 
 var _ types.MsgServer = Keeper{}
-
 var adminTokenDenom = "cudosAdmin"
 
 func (k Keeper) VerifyInvariant(goCtx context.Context, msg *types.MsgVerifyInvariant) (*types.MsgVerifyInvariantResponse, error) {

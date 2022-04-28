@@ -6,6 +6,8 @@ import (
 	"fmt"
 	_ "unsafe"
 
+	_ "unsafe"
+
 	"github.com/spf13/cobra"
 	tmlog "github.com/tendermint/tendermint/libs/log"
 	"github.com/tendermint/tendermint/p2p"
@@ -115,6 +117,7 @@ against which this app has been compiled.
 			return nil
 		},
 	}
+
 }
 
 //go:linkname resetAll github.com/tendermint/tendermint/cmd/tendermint/commands.resetAll

@@ -26,13 +26,13 @@ func TestCannotUnjailUnlessJailed(t *testing.T) {
 	app := simapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	pks := simapp.CreateTestPubKeys(1)
-	simapp.AddTestAddrsFromPubKeys(app, ctx, pks, app.StakingKeeper.TokensFromConsensusPower(ctx, 200))
+	simapp.AddTestAddrsFromPubKeys(app, ctx, pks, app.StakingKeeper.TokensFromConsensusPower(ctx, 4000000))
 
 	tstaking := teststaking.NewHelper(t, ctx, app.StakingKeeper)
 	slh := slashing.NewHandler(app.SlashingKeeper)
 	addr, val := sdk.ValAddress(pks[0].Address()), pks[0]
 
-	amt := tstaking.CreateValidatorWithValPower(addr, val, 100, true)
+	amt := tstaking.CreateValidatorWithValPower(addr, val, 2000000, true)
 	staking.EndBlocker(ctx, app.StakingKeeper)
 	require.Equal(
 		t, app.BankKeeper.GetAllBalances(ctx, sdk.AccAddress(addr)),
@@ -52,12 +52,12 @@ func TestCannotUnjailUnlessMeetMinSelfDelegation(t *testing.T) {
 	app := simapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	pks := simapp.CreateTestPubKeys(1)
-	simapp.AddTestAddrsFromPubKeys(app, ctx, pks, app.StakingKeeper.TokensFromConsensusPower(ctx, 200))
+	simapp.AddTestAddrsFromPubKeys(app, ctx, pks, app.StakingKeeper.TokensFromConsensusPower(ctx, 4000000))
 
 	tstaking := teststaking.NewHelper(t, ctx, app.StakingKeeper)
 	slh := slashing.NewHandler(app.SlashingKeeper)
 	addr, val := sdk.ValAddress(pks[0].Address()), pks[0]
-	amt := app.StakingKeeper.TokensFromConsensusPower(ctx, 100)
+	amt := app.StakingKeeper.TokensFromConsensusPower(ctx, 2000000)
 	msg := tstaking.CreateValidatorMsg(addr, val, amt)
 	msg.MinSelfDelegation = amt
 	tstaking.Handle(msg, true)
@@ -84,7 +84,7 @@ func TestJailedValidatorDelegations(t *testing.T) {
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Time: time.Unix(0, 0)})
 	pks := simapp.CreateTestPubKeys(3)
 
-	simapp.AddTestAddrsFromPubKeys(app, ctx, pks, app.StakingKeeper.TokensFromConsensusPower(ctx, 20))
+	simapp.AddTestAddrsFromPubKeys(app, ctx, pks, app.StakingKeeper.TokensFromConsensusPower(ctx, 4000000))
 	app.SlashingKeeper.SetParams(ctx, testslashing.TestParams())
 
 	tstaking := teststaking.NewHelper(t, ctx, app.StakingKeeper)
@@ -92,7 +92,7 @@ func TestJailedValidatorDelegations(t *testing.T) {
 	app.StakingKeeper.SetParams(ctx, stakingParams)
 	valAddr, consAddr := sdk.ValAddress(pks[1].Address()), sdk.ConsAddress(pks[0].Address())
 
-	amt := tstaking.CreateValidatorWithValPower(valAddr, pks[1], 10, true)
+	amt := tstaking.CreateValidatorWithValPower(valAddr, pks[1], 2000000, true)
 	staking.EndBlocker(ctx, app.StakingKeeper)
 
 	// set dummy signing info
@@ -145,10 +145,10 @@ func TestHandleAbsentValidator(t *testing.T) {
 	app := simapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{Time: time.Unix(0, 0)})
 	pks := simapp.CreateTestPubKeys(1)
-	simapp.AddTestAddrsFromPubKeys(app, ctx, pks, app.StakingKeeper.TokensFromConsensusPower(ctx, 200))
+	simapp.AddTestAddrsFromPubKeys(app, ctx, pks, app.StakingKeeper.TokensFromConsensusPower(ctx, 4000000))
 	app.SlashingKeeper.SetParams(ctx, testslashing.TestParams())
 
-	power := int64(100)
+	power := int64(3000000)
 	addr, val := sdk.ValAddress(pks[0].Address()), pks[0]
 	slh := slashing.NewHandler(app.SlashingKeeper)
 	tstaking := teststaking.NewHelper(t, ctx, app.StakingKeeper)

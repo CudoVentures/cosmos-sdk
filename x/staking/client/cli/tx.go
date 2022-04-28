@@ -2,9 +2,10 @@ package cli
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"os"
 	"strings"
+
+	"github.com/pkg/errors"
 
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
@@ -21,7 +22,7 @@ import (
 
 // default values
 var (
-	DefaultTokens                  = sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction)
+	DefaultTokens                  = sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction)
 	defaultAmount                  = DefaultTokens.String() + sdk.DefaultBondDenom
 	defaultCommissionRate          = "0.1"
 	defaultCommissionMaxRate       = "0.2"
@@ -100,9 +101,11 @@ func NewEditValidatorCmd() *cobra.Command {
 			}
 			valAddr := clientCtx.GetFromAddress()
 			moniker, _ := cmd.Flags().GetString(FlagMoniker)
+
 			if moniker == "" {
 				return errors.New("moniker cannot be empty")
 			}
+
 			identity, _ := cmd.Flags().GetString(FlagIdentity)
 			website, _ := cmd.Flags().GetString(FlagWebsite)
 			security, _ := cmd.Flags().GetString(FlagSecurityContact)
@@ -303,6 +306,7 @@ func newBuildCreateValidatorMsg(clientCtx client.Context, txf tx.Factory, fs *fl
 	if moniker == "" {
 		return txf, nil, errors.New("moniker cannot be empty")
 	}
+
 	identity, _ := fs.GetString(FlagIdentity)
 	website, _ := fs.GetString(FlagWebsite)
 	security, _ := fs.GetString(FlagSecurityContact)

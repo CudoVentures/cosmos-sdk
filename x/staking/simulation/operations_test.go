@@ -82,9 +82,9 @@ func TestSimulateMsgCreateValidator(t *testing.T) {
 	types.ModuleCdc.UnmarshalJSON(operationMsg.Msg, &msg)
 
 	require.True(t, operationMsg.OK)
-	require.Equal(t, "0.080000000000000000", msg.Commission.MaxChangeRate.String())
-	require.Equal(t, "0.080000000000000000", msg.Commission.MaxRate.String())
-	require.Equal(t, "0.019527679037870745", msg.Commission.Rate.String())
+	require.Equal(t, "0.522099735739831915", msg.Commission.MaxChangeRate.String())
+	require.Equal(t, "0.880000000000000000", msg.Commission.MaxRate.String())
+	require.Equal(t, "0.000000000000000000", msg.Commission.Rate.String())
 	require.Equal(t, types.TypeMsgCreateValidator, msg.Type())
 	require.Equal(t, []byte{0xa, 0x20, 0x51, 0xde, 0xbd, 0xe8, 0xfa, 0xdf, 0x4e, 0xfc, 0x33, 0xa5, 0x16, 0x94, 0xf6, 0xee, 0xd3, 0x69, 0x7a, 0x7a, 0x1c, 0x2d, 0x50, 0xb6, 0x2, 0xf7, 0x16, 0x4e, 0x66, 0x9f, 0xff, 0x38, 0x91, 0x9b}, msg.Pubkey.Value)
 	require.Equal(t, "cosmos1ghekyjucln7y67ntx7cf27m9dpuxxemn4c8g4r", msg.DelegatorAddress)
@@ -158,7 +158,7 @@ func TestSimulateMsgDelegate(t *testing.T) {
 
 	require.True(t, operationMsg.OK)
 	require.Equal(t, "cosmos1ghekyjucln7y67ntx7cf27m9dpuxxemn4c8g4r", msg.DelegatorAddress)
-	require.Equal(t, "98100858108421259236", msg.Amount.Amount.String())
+	require.Equal(t, "12945768474228198874845001", msg.Amount.Amount.String())
 	require.Equal(t, "stake", msg.Amount.Denom)
 	require.Equal(t, types.TypeMsgDelegate, msg.Type())
 	require.Equal(t, "cosmosvaloper1tnh2q55v8wyygtt9srz5safamzdengsn9dsd7z", msg.ValidatorAddress)
@@ -276,7 +276,7 @@ func createTestApp(isCheckTx bool) (*simapp.SimApp, sdk.Context) {
 func getTestingAccounts(t *testing.T, r *rand.Rand, app *simapp.SimApp, ctx sdk.Context, n int) []simtypes.Account {
 	accounts := simtypes.RandomAccounts(r, n)
 
-	initAmt := app.StakingKeeper.TokensFromConsensusPower(ctx, 200)
+	initAmt := app.StakingKeeper.TokensFromConsensusPower(ctx, 20000000)
 	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initAmt))
 
 	// add coins to the accounts

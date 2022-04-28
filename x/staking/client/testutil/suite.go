@@ -61,7 +61,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		val.ValAddress,
 		val2.ValAddress,
 		unbond,
-		fmt.Sprintf("--%s=%d", flags.FlagGas, 202954), //  202954 is the required
+		fmt.Sprintf("--%s=%d", flags.FlagGas, 300000),
 	)
 	s.Require().NoError(err)
 	_, err = s.network.WaitForHeight(1)
@@ -95,7 +95,7 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 		val.ClientCtx,
 		val.Address,
 		newAddr,
-		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(200))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.TokensFromConsensusPower(3000000, sdk.DefaultPowerReduction))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	)
@@ -118,7 +118,7 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 				fmt.Sprintf("--%s=0.5", cli.FlagCommissionRate),
 				fmt.Sprintf("--%s=1.0", cli.FlagCommissionMaxRate),
 				fmt.Sprintf("--%s=0.1", cli.FlagCommissionMaxChangeRate),
-				fmt.Sprintf("--%s=1", cli.FlagMinSelfDelegation),
+				fmt.Sprintf("--%s=2000000000000000000000000", cli.FlagMinSelfDelegation),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, newAddr),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
@@ -129,7 +129,7 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 		{
 			"invalid transaction (missing pubkey)",
 			[]string{
-				fmt.Sprintf("--%s=%dstake", cli.FlagAmount, 100),
+				fmt.Sprintf("--%s=%sstake", cli.FlagAmount, "2000000000000000000000000"),
 				fmt.Sprintf("--%s=AFAF00C4", cli.FlagIdentity),
 				fmt.Sprintf("--%s=https://newvalidator.io", cli.FlagWebsite),
 				fmt.Sprintf("--%s=contact@newvalidator.io", cli.FlagSecurityContact),
@@ -137,7 +137,7 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 				fmt.Sprintf("--%s=0.5", cli.FlagCommissionRate),
 				fmt.Sprintf("--%s=1.0", cli.FlagCommissionMaxRate),
 				fmt.Sprintf("--%s=0.1", cli.FlagCommissionMaxChangeRate),
-				fmt.Sprintf("--%s=1", cli.FlagMinSelfDelegation),
+				fmt.Sprintf("--%s=2000000000000000000000000", cli.FlagMinSelfDelegation),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, newAddr),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
@@ -149,7 +149,7 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 			"invalid transaction (missing moniker)",
 			[]string{
 				fmt.Sprintf("--%s=%s", cli.FlagPubKey, consPubKeyBz),
-				fmt.Sprintf("--%s=%dstake", cli.FlagAmount, 100),
+				fmt.Sprintf("--%s=%sstake", cli.FlagAmount, "2000000000000000000000000"),
 				fmt.Sprintf("--%s=AFAF00C4", cli.FlagIdentity),
 				fmt.Sprintf("--%s=https://newvalidator.io", cli.FlagWebsite),
 				fmt.Sprintf("--%s=contact@newvalidator.io", cli.FlagSecurityContact),
@@ -157,7 +157,7 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 				fmt.Sprintf("--%s=0.5", cli.FlagCommissionRate),
 				fmt.Sprintf("--%s=1.0", cli.FlagCommissionMaxRate),
 				fmt.Sprintf("--%s=0.1", cli.FlagCommissionMaxChangeRate),
-				fmt.Sprintf("--%s=1", cli.FlagMinSelfDelegation),
+				fmt.Sprintf("--%s=2000000000000000000000000", cli.FlagMinSelfDelegation),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, newAddr),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
@@ -169,7 +169,7 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 			"valid transaction",
 			[]string{
 				fmt.Sprintf("--%s=%s", cli.FlagPubKey, consPubKeyBz),
-				fmt.Sprintf("--%s=%dstake", cli.FlagAmount, 100),
+				fmt.Sprintf("--%s=%sstake", cli.FlagAmount, "2000000000000000000000000"),
 				fmt.Sprintf("--%s=NewValidator", cli.FlagMoniker),
 				fmt.Sprintf("--%s=AFAF00C4", cli.FlagIdentity),
 				fmt.Sprintf("--%s=https://newvalidator.io", cli.FlagWebsite),
@@ -178,7 +178,7 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 				fmt.Sprintf("--%s=0.5", cli.FlagCommissionRate),
 				fmt.Sprintf("--%s=1.0", cli.FlagCommissionMaxRate),
 				fmt.Sprintf("--%s=0.1", cli.FlagCommissionMaxChangeRate),
-				fmt.Sprintf("--%s=1", cli.FlagMinSelfDelegation),
+				fmt.Sprintf("--%s=2000000000000000000000000", cli.FlagMinSelfDelegation),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, newAddr),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
@@ -211,7 +211,7 @@ func (s *IntegrationTestSuite) TestNewCreateValidatorCmd() {
 				for i := 0; i < len(events); i++ {
 					if events[i].GetType() == "create_validator" {
 						attributes := events[i].GetAttributes()
-						require.Equal(attributes[1].Value, "100stake")
+						require.Equal(attributes[1].Value, "2000000000000000000000000stake")
 						break
 					}
 				}
@@ -399,7 +399,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryDelegations() {
 			&types.QueryDelegatorDelegationsResponse{},
 			&types.QueryDelegatorDelegationsResponse{
 				DelegationResponses: types.DelegationResponses{
-					types.NewDelegationResp(val.Address, val.ValAddress, sdk.NewDecFromInt(cli.DefaultTokens), sdk.NewCoin(sdk.DefaultBondDenom, cli.DefaultTokens)),
+					types.NewDelegationResp(val.Address, val.ValAddress, sdk.NewDecFromInt(cli.DefaultTokens.Mul(sdk.NewInt(2))), sdk.NewCoin(sdk.DefaultBondDenom, cli.DefaultTokens.Mul(sdk.NewInt(2)))),
 				},
 				Pagination: &query.PageResponse{},
 			},
@@ -455,7 +455,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryValidatorDelegations() {
 			&types.QueryValidatorDelegationsResponse{},
 			&types.QueryValidatorDelegationsResponse{
 				DelegationResponses: types.DelegationResponses{
-					types.NewDelegationResp(val.Address, val.ValAddress, sdk.NewDecFromInt(cli.DefaultTokens), sdk.NewCoin(sdk.DefaultBondDenom, cli.DefaultTokens)),
+					types.NewDelegationResp(val.Address, val.ValAddress, sdk.NewDecFromInt(cli.DefaultTokens.Mul(sdk.NewInt(2))), sdk.NewCoin(sdk.DefaultBondDenom, cli.DefaultTokens.Mul(sdk.NewInt(2)))),
 				},
 				Pagination: &query.PageResponse{},
 			},
@@ -910,7 +910,7 @@ func (s *IntegrationTestSuite) TestGetCmdQueryPool() {
 				fmt.Sprintf("--%s=1", flags.FlagHeight),
 			},
 			fmt.Sprintf(`bonded_tokens: "%s"
-not_bonded_tokens: "0"`, cli.DefaultTokens.Mul(sdk.NewInt(2)).String()),
+not_bonded_tokens: "0"`, cli.DefaultTokens.Mul(sdk.NewInt(4)).String()),
 		},
 		{
 			"with json",
@@ -918,7 +918,7 @@ not_bonded_tokens: "0"`, cli.DefaultTokens.Mul(sdk.NewInt(2)).String()),
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 				fmt.Sprintf("--%s=1", flags.FlagHeight),
 			},
-			fmt.Sprintf(`{"not_bonded_tokens":"0","bonded_tokens":"%s"}`, cli.DefaultTokens.Mul(sdk.NewInt(2)).String()),
+			fmt.Sprintf(`{"not_bonded_tokens":"0","bonded_tokens":"%s"}`, cli.DefaultTokens.Mul(sdk.NewInt(4)).String()),
 		},
 	}
 	for _, tc := range testCases {

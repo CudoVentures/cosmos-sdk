@@ -97,6 +97,7 @@ func (s *IntegrationTestSuite) TestNewMsgVerifyInvariantTxCmd() {
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
 				txResp := tc.respType.(*sdk.TxResponse)
+				fmt.Println(txResp)
 				s.Require().Equal(tc.expectedCode, txResp.Code)
 			}
 		})

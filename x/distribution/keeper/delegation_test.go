@@ -71,7 +71,7 @@ func TestCalculateRewardsAfterSlash(t *testing.T) {
 	app := simapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
-	addr := simapp.AddTestAddrs(app, ctx, 2, sdk.NewInt(100000000))
+	addr := simapp.AddTestAddrs(app, ctx, 2, sdk.TokensFromConsensusPower(100000000, sdk.DefaultPowerReduction))
 	valAddrs := simapp.ConvertAddrsToValAddrs(addr)
 	tstaking := teststaking.NewHelper(t, ctx, app.StakingKeeper)
 
@@ -135,7 +135,7 @@ func TestCalculateRewardsAfterManySlashes(t *testing.T) {
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	tstaking := teststaking.NewHelper(t, ctx, app.StakingKeeper)
-	addr := simapp.AddTestAddrs(app, ctx, 2, sdk.NewInt(100000000))
+	addr := simapp.AddTestAddrs(app, ctx, 2, sdk.TokensFromConsensusPower(10000000, sdk.DefaultPowerReduction))
 	valAddrs := simapp.ConvertAddrsToValAddrs(addr)
 
 	// create validator with 50% commission
@@ -272,9 +272,9 @@ func TestWithdrawDelegationRewardsBasic(t *testing.T) {
 	app := simapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
-	balancePower := int64(1000)
+	balancePower := int64(20000000)
 	balanceTokens := app.StakingKeeper.TokensFromConsensusPower(ctx, balancePower)
-	addr := simapp.AddTestAddrs(app, ctx, 1, sdk.NewInt(1000000000))
+	addr := simapp.AddTestAddrs(app, ctx, 1, sdk.TokensFromConsensusPower(20000000, sdk.DefaultPowerReduction))
 	valAddrs := simapp.ConvertAddrsToValAddrs(addr)
 	tstaking := teststaking.NewHelper(t, ctx, app.StakingKeeper)
 
@@ -284,7 +284,7 @@ func TestWithdrawDelegationRewardsBasic(t *testing.T) {
 	app.AccountKeeper.SetModuleAccount(ctx, distrAcc)
 
 	// create validator with 50% commission
-	power := int64(100)
+	power := int64(2000000)
 	tstaking.Commission = stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(5, 1), sdk.NewDecWithPrec(5, 1), sdk.NewDec(0))
 	valTokens := tstaking.CreateValidatorWithValPower(valAddrs[0], valConsPk1, power, true)
 
@@ -343,7 +343,7 @@ func TestCalculateRewardsAfterManySlashesInSameBlock(t *testing.T) {
 	app := simapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
-	addr := simapp.AddTestAddrs(app, ctx, 1, sdk.NewInt(1000000000))
+	addr := simapp.AddTestAddrs(app, ctx, 1, sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction))
 	valAddrs := simapp.ConvertAddrsToValAddrs(addr)
 	tstaking := teststaking.NewHelper(t, ctx, app.StakingKeeper)
 
@@ -412,7 +412,7 @@ func TestCalculateRewardsMultiDelegatorMultiSlash(t *testing.T) {
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	tstaking := teststaking.NewHelper(t, ctx, app.StakingKeeper)
-	addr := simapp.AddTestAddrs(app, ctx, 2, sdk.NewInt(1000000000))
+	addr := simapp.AddTestAddrs(app, ctx, 2, sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction))
 	valAddrs := simapp.ConvertAddrsToValAddrs(addr)
 
 	// create validator with 50% commission

@@ -40,6 +40,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -82,6 +83,7 @@ type Config struct {
 	TimeoutCommit     time.Duration              // the consensus commitment timeout
 	ChainID           string                     // the network chain-id
 	NumValidators     int                        // the total number of validators to create and bond
+	Mnemonics         []string                   // custom user-provided validator operator mnemonics
 	BondDenom         string                     // the staking bond denomination
 	MinGasPrices      string                     // the minimum gas prices each validator will accept
 	AccountTokens     sdk.Int                    // the amount of unique validator tokens (e.g. 1000node0)
@@ -114,8 +116,8 @@ func DefaultConfig() Config {
 		NumValidators:     4,
 		BondDenom:         sdk.DefaultBondDenom,
 		MinGasPrices:      fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom),
-		AccountTokens:     sdk.TokensFromConsensusPower(4000000, sdk.DefaultPowerReduction),
-		StakingTokens:     sdk.TokensFromConsensusPower(4000000, sdk.DefaultPowerReduction),
+		AccountTokens:     sdk.TokensFromConsensusPower(20000000, sdk.DefaultPowerReduction),
+		StakingTokens:     sdk.TokensFromConsensusPower(10000000, sdk.DefaultPowerReduction),
 		BondedTokens:      sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction),
 		MinSelfDelegation: sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction),
 		PruningStrategy:   storetypes.PruningOptionNothing,
@@ -270,6 +272,7 @@ func New(t *testing.T, cfg Config) *Network {
 
 		p2pAddr, _, err := server.FreeTCPAddr()
 		require.NoError(t, err)
+
 		tmCfg.P2P.ListenAddress = p2pAddr
 		tmCfg.P2P.AddrBookStrict = false
 		tmCfg.P2P.AllowDuplicateIP = true
@@ -286,7 +289,12 @@ func New(t *testing.T, cfg Config) *Network {
 		algo, err := keyring.NewSigningAlgoFromString(cfg.SigningAlgo, keyringAlgos)
 		require.NoError(t, err)
 
-		addr, secret, err := server.GenerateSaveCoinKey(kb, nodeDirName, true, algo)
+		var mnemonic string
+		if i < len(cfg.Mnemonics) {
+			mnemonic = cfg.Mnemonics[i]
+		}
+
+		addr, secret, err := testutil.GenerateSaveCoinKey(kb, nodeDirName, mnemonic, true, algo)
 		require.NoError(t, err)
 
 		info := map[string]string{"secret": secret}
@@ -298,6 +306,7 @@ func New(t *testing.T, cfg Config) *Network {
 
 		balances := sdk.NewCoins(
 			sdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), cfg.AccountTokens),
+			sdk.NewCoin("cudosAdmin", sdk.OneInt()),
 			sdk.NewCoin(cfg.BondDenom, cfg.StakingTokens),
 		)
 
@@ -311,7 +320,7 @@ func New(t *testing.T, cfg Config) *Network {
 		createValMsg, err := stakingtypes.NewMsgCreateValidator(
 			sdk.ValAddress(addr),
 			valPubKeys[i],
-			sdk.NewCoin(cfg.BondDenom, cfg.BondedTokens),
+			sdk.NewCoin(cfg.BondDenom, cfg.BondedTokens.Mul(sdk.NewInt(2))),
 			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
 			stakingtypes.NewCommissionRates(commission, sdk.OneDec(), sdk.OneDec()),
 			cfg.MinSelfDelegation,
