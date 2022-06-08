@@ -260,7 +260,7 @@ func SimulateMsgCreateGroup(ak group.AccountKeeper, bk group.BankKeeper) simtype
 		msg := &group.MsgCreateGroup{Admin: accAddr, Members: members, Metadata: simtypes.RandStringOfLength(r, 10)}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -274,7 +274,7 @@ func SimulateMsgCreateGroup(ak group.AccountKeeper, bk group.BankKeeper) simtype
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroup, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -319,7 +319,7 @@ func SimulateMsgCreateGroupWithPolicy(ak group.AccountKeeper, bk group.BankKeepe
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -333,7 +333,7 @@ func SimulateMsgCreateGroupWithPolicy(ak group.AccountKeeper, bk group.BankKeepe
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupWithPolicy, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -378,7 +378,7 @@ func SimulateMsgCreateGroupPolicy(ak group.AccountKeeper, bk group.BankKeeper, k
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -392,7 +392,7 @@ func SimulateMsgCreateGroupPolicy(ak group.AccountKeeper, bk group.BankKeeper, k
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupPolicy, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			fmt.Printf("ERR DELIVER %v\n", err)
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
@@ -453,7 +453,7 @@ func SimulateMsgSubmitProposal(ak group.AccountKeeper, bk group.BankKeeper, k ke
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{&msg},
 			fees,
@@ -467,7 +467,7 @@ func SimulateMsgSubmitProposal(ak group.AccountKeeper, bk group.BankKeeper, k ke
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgSubmitProposal, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -512,7 +512,7 @@ func SimulateMsgUpdateGroupAdmin(ak group.AccountKeeper, bk group.BankKeeper, k 
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{&msg},
 			fees,
@@ -526,7 +526,7 @@ func SimulateMsgUpdateGroupAdmin(ak group.AccountKeeper, bk group.BankKeeper, k 
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAdmin, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -562,7 +562,7 @@ func SimulateMsgUpdateGroupMetadata(ak group.AccountKeeper, bk group.BankKeeper,
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{&msg},
 			fees,
@@ -576,7 +576,7 @@ func SimulateMsgUpdateGroupMetadata(ak group.AccountKeeper, bk group.BankKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupMetadata, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -641,7 +641,7 @@ func SimulateMsgUpdateGroupMembers(ak group.AccountKeeper,
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{&msg},
 			fees,
@@ -655,7 +655,7 @@ func SimulateMsgUpdateGroupMembers(ak group.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupMembers, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -700,7 +700,7 @@ func SimulateMsgUpdateGroupPolicyAdmin(ak group.AccountKeeper, bk group.BankKeep
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{&msg},
 			fees,
@@ -714,7 +714,7 @@ func SimulateMsgUpdateGroupPolicyAdmin(ak group.AccountKeeper, bk group.BankKeep
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupPolicyAdmin, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -761,7 +761,7 @@ func SimulateMsgUpdateGroupPolicyDecisionPolicy(ak group.AccountKeeper,
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -775,7 +775,7 @@ func SimulateMsgUpdateGroupPolicyDecisionPolicy(ak group.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupPolicyDecisionPolicy, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -812,7 +812,7 @@ func SimulateMsgUpdateGroupPolicyMetadata(ak group.AccountKeeper,
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{&msg},
 			fees,
@@ -826,7 +826,7 @@ func SimulateMsgUpdateGroupPolicyMetadata(ak group.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupPolicyMetadata, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -914,7 +914,7 @@ func SimulateMsgWithdrawProposal(ak group.AccountKeeper,
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{&msg},
 			fees,
@@ -928,7 +928,7 @@ func SimulateMsgWithdrawProposal(ak group.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupPolicyMetadata, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
 			if strings.Contains(err.Error(), "group was modified") || strings.Contains(err.Error(), "group policy was modified") {
@@ -1019,7 +1019,7 @@ func SimulateMsgVote(ak group.AccountKeeper,
 			Metadata:   simtypes.RandStringOfLength(r, 10),
 		}
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{&msg},
 			fees,
@@ -1033,7 +1033,7 @@ func SimulateMsgVote(ak group.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupPolicyMetadata, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 
 		if err != nil {
 			if strings.Contains(err.Error(), "group was modified") || strings.Contains(err.Error(), "group policy was modified") {
@@ -1097,7 +1097,7 @@ func SimulateMsgExec(ak group.AccountKeeper,
 			Executor:   acc.Address.String(),
 		}
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{&msg},
 			fees,
@@ -1111,7 +1111,7 @@ func SimulateMsgExec(ak group.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupPolicyMetadata, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			if strings.Contains(err.Error(), "group was modified") || strings.Contains(err.Error(), "group policy was modified") {
 				return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "no-op:group/group-policy was modified"), nil, nil
@@ -1159,7 +1159,7 @@ func SimulateMsgLeaveGroup(k keeper.Keeper, ak group.AccountKeeper, bk group.Ban
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenSignedMockTx(
+		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
@@ -1173,7 +1173,7 @@ func SimulateMsgLeaveGroup(k keeper.Keeper, ak group.AccountKeeper, bk group.Ban
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgLeaveGroup, "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.SimDeliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), err.Error()), nil, err
 		}

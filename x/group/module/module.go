@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -105,6 +106,8 @@ func (AppModule) Name() string {
 func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
 	keeper.RegisterInvariants(ir, am.keeper)
 }
+
+func (AppModuleBasic) RegisterRESTRoutes(ctx sdkclient.Context, rtr *mux.Router) {}
 
 // Deprecated: Route returns the message routing key for the group module.
 func (am AppModule) Route() sdk.Route {

@@ -9,13 +9,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/suite"
-	tmtime "github.com/tendermint/tendermint/libs/time"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	"github.com/cosmos/cosmos-sdk/x/group/internal/math"
@@ -38,7 +37,7 @@ type TestSuite struct {
 }
 
 func (s *TestSuite) SetupTest() {
-	app := simapp.Setup(s.T(), false)
+	app := simapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	s.blockTime = tmtime.Now()
@@ -78,7 +77,7 @@ func (s *TestSuite) SetupTest() {
 	addr, err := sdk.AccAddressFromBech32(policyRes.Address)
 	s.Require().NoError(err)
 	s.groupPolicyAddr = addr
-	s.Require().NoError(testutil.FundAccount(s.app.BankKeeper, s.sdkCtx, s.groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+	s.Require().NoError(simapp.FundAccount(s.app.BankKeeper, s.sdkCtx, s.groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -1763,7 +1762,7 @@ func (s *TestSuite) TestVote() {
 	s.Require().NoError(err)
 	s.Require().NotNil(groupPolicy)
 
-	s.Require().NoError(testutil.FundAccount(s.app.BankKeeper, s.sdkCtx, groupPolicy, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+	s.Require().NoError(simapp.FundAccount(s.app.BankKeeper, s.sdkCtx, groupPolicy, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
 
 	req := &group.MsgSubmitProposal{
 		GroupPolicyAddress: accountAddr,
@@ -2317,7 +2316,7 @@ func (s *TestSuite) TestExecProposal() {
 				_, err := s.keeper.Exec(ctx, &group.MsgExec{Executor: addr1.String(), ProposalId: myProposalID})
 				s.Require().NoError(err)
 				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				s.Require().NoError(testutil.FundAccount(s.app.BankKeeper, sdkCtx, s.groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+				s.Require().NoError(simapp.FundAccount(s.app.BankKeeper, sdkCtx, s.groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 
 				return myProposalID
 			},
@@ -2465,7 +2464,7 @@ func (s *TestSuite) TestExecPrunedProposalsAndVotes() {
 				_, err := s.keeper.Exec(ctx, &group.MsgExec{Executor: addr1.String(), ProposalId: myProposalID})
 				s.Require().NoError(err)
 				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				s.Require().NoError(testutil.FundAccount(s.app.BankKeeper, sdkCtx, s.groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+				s.Require().NoError(simapp.FundAccount(s.app.BankKeeper, sdkCtx, s.groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 
 				return myProposalID
 			},
@@ -2828,7 +2827,6 @@ func (s *TestSuite) TestLeaveGroup() {
 		})
 	}
 }
-
 
 func (s *TestSuite) TestPruneProposals() {
 	addrs := s.addrs

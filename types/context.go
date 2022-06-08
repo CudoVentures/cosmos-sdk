@@ -76,6 +76,18 @@ func (c Context) ConsensusParams() *abci.ConsensusParams {
 	return proto.Clone(c.consParams).(*abci.ConsensusParams)
 }
 
+func (c Context) Deadline() (deadline time.Time, ok bool) {
+	return c.ctx.Deadline()
+}
+
+func (c Context) Done() <-chan struct{} {
+	return c.ctx.Done()
+}
+
+func (c Context) Err() error {
+	return c.ctx.Err()
+}
+
 // create a new context
 func NewContext(ms MultiStore, header tmproto.Header, isCheckTx bool, logger log.Logger) Context {
 	// https://github.com/gogo/protobuf/issues/519
@@ -235,6 +247,11 @@ func (c Context) WithValue(key, value interface{}) Context {
 // instead of
 //     ctx.Value(key)
 func (c Context) Value(key interface{}) interface{} {
+	// todo test without
+	if key == SdkContextKey {
+		return c
+	}
+
 	return c.ctx.Value(key)
 }
 
@@ -261,6 +278,8 @@ func (c Context) CacheContext() (cc Context, writeCache func()) {
 	return cc, cms.Write
 }
 
+var _ context.Context = Context{}
+
 // ContextKey defines a type alias for a stdlib Context key.
 type ContextKey string
 
@@ -279,5 +298,10 @@ func WrapSDKContext(ctx Context) context.Context {
 // attached with WrapSDKContext. It panics if a Context was not properly
 // attached
 func UnwrapSDKContext(ctx context.Context) Context {
+	// todo test without
+	if sdkCtx, ok := ctx.(Context); ok {
+		return sdkCtx
+	}
+
 	return ctx.Value(SdkContextKey).(Context)
 }

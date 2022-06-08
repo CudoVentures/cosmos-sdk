@@ -14,7 +14,7 @@ import (
 // This test serves as a showcase that we need to be careful when unmarshalling
 // multiple times into the same reference.
 func TestGogoUnmarshalProposal(t *testing.T) {
-	cdc := simapp.MakeTestEncodingConfig().Codec
+	cdc := simapp.MakeTestEncodingConfig().Marshaler
 	p1 := group.Proposal{Proposers: []string{"foo"}}
 	p2 := group.Proposal{Proposers: []string{"bar"}}
 

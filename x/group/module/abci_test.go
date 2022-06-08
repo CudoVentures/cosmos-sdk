@@ -7,7 +7,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/bank/testutil"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	"github.com/cosmos/cosmos-sdk/x/group/module"
@@ -18,7 +17,7 @@ import (
 )
 
 func TestEndBlockerPruning(t *testing.T) {
-	app := simapp.Setup(t, false)
+	app := simapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 	addrs := simapp.AddTestAddrsIncremental(app, ctx, 3, sdk.NewInt(30000000))
 	addr1 := addrs[0]
@@ -79,11 +78,11 @@ func TestEndBlockerPruning(t *testing.T) {
 
 	groupPolicyAddr, err := sdk.AccAddressFromBech32(policyRes.Address)
 	require.NoError(t, err)
-	require.NoError(t, testutil.FundAccount(app.BankKeeper, ctx, groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+	require.NoError(t, simapp.FundAccount(app.BankKeeper, ctx, groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
 
 	groupPolicyAddr2, err := sdk.AccAddressFromBech32(policyRes2.Address)
 	require.NoError(t, err)
-	require.NoError(t, testutil.FundAccount(app.BankKeeper, ctx, groupPolicyAddr2, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+	require.NoError(t, simapp.FundAccount(app.BankKeeper, ctx, groupPolicyAddr2, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
 
 	votingPeriod := policy.GetVotingPeriod()
 
@@ -115,7 +114,7 @@ func TestEndBlockerPruning(t *testing.T) {
 				_, err = app.GroupKeeper.Exec(ctx, &group.MsgExec{Executor: addr3.String(), ProposalId: pID})
 				require.NoError(t, err)
 				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				require.NoError(t, testutil.FundAccount(app.BankKeeper, sdkCtx, groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+				require.NoError(t, simapp.FundAccount(app.BankKeeper, sdkCtx, groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 
 				return pID
 			},
@@ -131,7 +130,7 @@ func TestEndBlockerPruning(t *testing.T) {
 				_, err = app.GroupKeeper.Exec(ctx, &group.MsgExec{Executor: addr3.String(), ProposalId: pID})
 				require.NoError(t, err)
 				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				require.NoError(t, testutil.FundAccount(app.BankKeeper, sdkCtx, groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+				require.NoError(t, simapp.FundAccount(app.BankKeeper, sdkCtx, groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 
 				return pID
 			},
@@ -147,7 +146,7 @@ func TestEndBlockerPruning(t *testing.T) {
 				_, err = app.GroupKeeper.Exec(ctx, &group.MsgExec{Executor: addr3.String(), ProposalId: pID})
 				require.NoError(t, err)
 				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				require.NoError(t, testutil.FundAccount(app.BankKeeper, sdkCtx, groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+				require.NoError(t, simapp.FundAccount(app.BankKeeper, sdkCtx, groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 
 				return pID
 			},
@@ -162,7 +161,7 @@ func TestEndBlockerPruning(t *testing.T) {
 				_, err = app.GroupKeeper.Exec(ctx, &group.MsgExec{Executor: addr3.String(), ProposalId: pID})
 				require.NoError(t, err)
 				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				require.NoError(t, testutil.FundAccount(app.BankKeeper, sdkCtx, groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+				require.NoError(t, simapp.FundAccount(app.BankKeeper, sdkCtx, groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 
 				return pID
 			},
@@ -182,7 +181,7 @@ func TestEndBlockerPruning(t *testing.T) {
 				_, err = app.GroupKeeper.Exec(ctx, &group.MsgExec{Executor: addr3.String(), ProposalId: pID})
 				require.Error(t, err) // since proposal with status Aborted cannot be executed
 				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				require.NoError(t, testutil.FundAccount(app.BankKeeper, sdkCtx, groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+				require.NoError(t, simapp.FundAccount(app.BankKeeper, sdkCtx, groupPolicyAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 
 				return pID
 			},
@@ -318,7 +317,7 @@ func TestEndBlockerPruning(t *testing.T) {
 }
 
 func TestEndBlockerTallying(t *testing.T) {
-	app := simapp.Setup(t, false)
+	app := simapp.Setup(false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	addrs := simapp.AddTestAddrsIncremental(app, ctx, 4, sdk.NewInt(30000000))
