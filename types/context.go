@@ -298,10 +298,10 @@ func WrapSDKContext(ctx Context) context.Context {
 // attached with WrapSDKContext. It panics if a Context was not properly
 // attached
 func UnwrapSDKContext(ctx context.Context) Context {
-	// todo test without
-	if sdkCtx, ok := ctx.(Context); ok {
-		return sdkCtx
-	}
+	// // todo test without
+	// if sdkCtx, ok := ctx.(Context); ok {
+	// 	return sdkCtx
+	// }
 
 	return ctx.Value(SdkContextKey).(Context)
 }
