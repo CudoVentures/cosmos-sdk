@@ -247,7 +247,6 @@ func (c Context) WithValue(key, value interface{}) Context {
 // instead of
 //     ctx.Value(key)
 func (c Context) Value(key interface{}) interface{} {
-	// todo test without
 	if key == SdkContextKey {
 		return c
 	}
@@ -278,8 +277,6 @@ func (c Context) CacheContext() (cc Context, writeCache func()) {
 	return cc, cms.Write
 }
 
-var _ context.Context = Context{}
-
 // ContextKey defines a type alias for a stdlib Context key.
 type ContextKey string
 
@@ -298,10 +295,5 @@ func WrapSDKContext(ctx Context) context.Context {
 // attached with WrapSDKContext. It panics if a Context was not properly
 // attached
 func UnwrapSDKContext(ctx context.Context) Context {
-	// // todo test without
-	// if sdkCtx, ok := ctx.(Context); ok {
-	// 	return sdkCtx
-	// }
-
 	return ctx.Value(SdkContextKey).(Context)
 }

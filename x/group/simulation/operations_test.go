@@ -49,21 +49,21 @@ func (suite *SimTestSuite) TestWeightedOperations() {
 		opMsgRoute string
 		opMsgName  string
 	}{
-		{simulation.WeightMsgCreateGroup, group.MsgCreateGroup{}.Route(), simulation.TypeMsgCreateGroup},
-		{simulation.WeightMsgCreateGroupPolicy, group.MsgCreateGroupPolicy{}.Route(), simulation.TypeMsgCreateGroupPolicy},
-		{simulation.WeightMsgCreateGroupWithPolicy, group.MsgCreateGroupWithPolicy{}.Route(), simulation.TypeMsgCreateGroupWithPolicy},
-		{simulation.WeightMsgSubmitProposal, group.MsgSubmitProposal{}.Route(), simulation.TypeMsgSubmitProposal},
-		{simulation.WeightMsgSubmitProposal, group.MsgSubmitProposal{}.Route(), simulation.TypeMsgSubmitProposal},
-		{simulation.WeightMsgWithdrawProposal, group.MsgWithdrawProposal{}.Route(), simulation.TypeMsgWithdrawProposal},
-		{simulation.WeightMsgVote, group.MsgVote{}.Route(), simulation.TypeMsgVote},
-		{simulation.WeightMsgExec, group.MsgExec{}.Route(), simulation.TypeMsgExec},
-		{simulation.WeightMsgUpdateGroupMetadata, group.MsgUpdateGroupMetadata{}.Route(), simulation.TypeMsgUpdateGroupMetadata},
-		{simulation.WeightMsgUpdateGroupAdmin, group.MsgUpdateGroupAdmin{}.Route(), simulation.TypeMsgUpdateGroupAdmin},
-		{simulation.WeightMsgUpdateGroupMembers, group.MsgUpdateGroupMembers{}.Route(), simulation.TypeMsgUpdateGroupMembers},
-		{simulation.WeightMsgUpdateGroupPolicyAdmin, group.MsgUpdateGroupPolicyAdmin{}.Route(), simulation.TypeMsgUpdateGroupPolicyAdmin},
-		{simulation.WeightMsgUpdateGroupPolicyDecisionPolicy, group.MsgUpdateGroupPolicyDecisionPolicy{}.Route(), simulation.TypeMsgUpdateGroupPolicyDecisionPolicy},
-		{simulation.WeightMsgUpdateGroupPolicyMetadata, group.MsgUpdateGroupPolicyMetadata{}.Route(), simulation.TypeMsgUpdateGroupPolicyMetadata},
-		{simulation.WeightMsgLeaveGroup, group.MsgLeaveGroup{}.Route(), simulation.TypeMsgLeaveGroup},
+		{simulation.WeightMsgCreateGroup, group.ModuleName, simulation.TypeMsgCreateGroup},
+		{simulation.WeightMsgCreateGroupPolicy, group.ModuleName, simulation.TypeMsgCreateGroupPolicy},
+		{simulation.WeightMsgCreateGroupWithPolicy, group.ModuleName, simulation.TypeMsgCreateGroupWithPolicy},
+		{simulation.WeightMsgSubmitProposal, group.ModuleName, simulation.TypeMsgSubmitProposal},
+		{simulation.WeightMsgSubmitProposal, group.ModuleName, simulation.TypeMsgSubmitProposal},
+		{simulation.WeightMsgWithdrawProposal, group.ModuleName, simulation.TypeMsgWithdrawProposal},
+		{simulation.WeightMsgVote, group.ModuleName, simulation.TypeMsgVote},
+		{simulation.WeightMsgExec, group.ModuleName, simulation.TypeMsgExec},
+		{simulation.WeightMsgUpdateGroupMetadata, group.ModuleName, simulation.TypeMsgUpdateGroupMetadata},
+		{simulation.WeightMsgUpdateGroupAdmin, group.ModuleName, simulation.TypeMsgUpdateGroupAdmin},
+		{simulation.WeightMsgUpdateGroupMembers, group.ModuleName, simulation.TypeMsgUpdateGroupMembers},
+		{simulation.WeightMsgUpdateGroupPolicyAdmin, group.ModuleName, simulation.TypeMsgUpdateGroupPolicyAdmin},
+		{simulation.WeightMsgUpdateGroupPolicyDecisionPolicy, group.ModuleName, simulation.TypeMsgUpdateGroupPolicyDecisionPolicy},
+		{simulation.WeightMsgUpdateGroupPolicyMetadata, group.ModuleName, simulation.TypeMsgUpdateGroupPolicyMetadata},
+		{simulation.WeightMsgLeaveGroup, group.ModuleName, simulation.TypeMsgLeaveGroup},
 	}
 
 	for i, w := range weightedOps {
@@ -72,7 +72,8 @@ func (suite *SimTestSuite) TestWeightedOperations() {
 		// by WeightedOperations. if the ordering in WeightedOperations changes some tests
 		// will fail
 		suite.Require().Equal(expected[i].weight, w.Weight(), "weight should be the same")
-		suite.Require().Equal(expected[i].opMsgRoute, operationMsg.Name, "route should be the same")
+		suite.Require().Equal(expected[i].opMsgRoute, operationMsg.Route, "route should be the same")
+		suite.Require().Equal(expected[i].opMsgName, operationMsg.Name, "name should be the same")
 	}
 }
 
