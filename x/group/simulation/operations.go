@@ -1195,7 +1195,7 @@ func randomGroup(r *rand.Rand, k keeper.Keeper, ak group.AccountKeeper,
 	default:
 		// This is called on the first call to this function
 		// in order to update the global variable
-		initialGroupID = groupID
+		// initialGroupID = groupID
 	}
 
 	res, err := k.GroupInfo(sdk.WrapSDKContext(ctx), &group.QueryGroupInfoRequest{GroupId: groupID})
