@@ -84,9 +84,9 @@ func TestCacheMultiStoreWithVersion(t *testing.T) {
 	cID := ms.Commit()
 	require.Equal(t, int64(1), cID.Version)
 
-	// require no failure when given an invalid or pruned version
+	// failure when given an invalid or pruned version
 	_, err = ms.CacheMultiStoreWithVersion(cID.Version + 1)
-	require.NoError(t, err)
+	require.ErrorContains(t, err, "non existant/pruned height")
 
 	// require a valid version can be cache-loaded
 	cms, err := ms.CacheMultiStoreWithVersion(cID.Version)
@@ -504,7 +504,7 @@ func TestMultiStore_Pruning(t *testing.T) {
 
 			for _, v := range tc.deleted {
 				_, err := ms.CacheMultiStoreWithVersion(v)
-				require.NoError(t, err, "expected error when loading height: %d", v)
+				require.ErrorContains(t, err, "non existant/pruned height", "expected error when loading height: %d", v)
 			}
 		})
 	}
