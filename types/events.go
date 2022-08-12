@@ -87,8 +87,18 @@ func TypedEventToEvent(tev proto.Message) (Event, error) {
 		return Event{}, err
 	}
 
+	// sort the keys to ensure the order is always the same
+	var keys []string
+
+	for k := range attrMap {
+		keys = append(keys, k)
+	}
+
+	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
+
 	attrs := make([]abci.EventAttribute, 0, len(attrMap))
-	for k, v := range attrMap {
+	for _, k := range keys {
+		v := attrMap[k]
 		attrs = append(attrs, abci.EventAttribute{
 			Key:   []byte(k),
 			Value: v,
