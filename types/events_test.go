@@ -2,6 +2,7 @@ package types_test
 
 import (
 	"encoding/json"
+	fmt "fmt"
 	"reflect"
 	"testing"
 
@@ -69,6 +70,22 @@ func (s *eventsTestSuite) TestEventManager() {
 
 	s.Require().Len(em.Events(), 2)
 	s.Require().Equal(em.Events(), events.AppendEvent(event))
+}
+
+func (s *eventsTestSuite) TestEmitTypedEvent() {
+	s.Run("deterministic key-value order", func() {
+		for i := 0; i < 10; i++ {
+			em := sdk.NewEventManager()
+			coin := sdk.NewCoin("fakedenom", sdk.NewInt(1999999))
+			s.Require().NoError(em.EmitTypedEvent(&coin))
+			s.Require().Len(em.Events(), 1)
+			attrs := em.Events()[0].Attributes
+			s.Require().Len(attrs, 2)
+			fmt.Println(attrs[0].Key)
+			s.Require().Equal([]byte("amount"), attrs[0].Key)
+			s.Require().Equal([]byte("denom"), attrs[1].Key)
+		}
+	})
 }
 
 func (s *eventsTestSuite) TestEventManagerTypedEvents() {
