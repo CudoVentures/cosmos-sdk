@@ -100,7 +100,7 @@ func NewEditValidatorCmd() *cobra.Command {
 				return err
 			}
 			valAddr := clientCtx.GetFromAddress()
-			moniker, _ := cmd.Flags().GetString(FlagMoniker)
+			moniker, _ := cmd.Flags().GetString(FlagEditMoniker)
 
 			if moniker == "" {
 				return errors.New("moniker cannot be empty")
