@@ -43,7 +43,7 @@ func TestWithdrawValidatorCommission(t *testing.T) {
 		sdk.NewDecCoinFromDec("stake", sdk.NewDec(3).Quo(sdk.NewDec(2))),
 	}
 
-	addr := simapp.AddTestAddrs(app, ctx, 1, sdk.NewInt(1000000000))
+	addr := simapp.AddTestAddrs(app, ctx, 1, sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction))
 	valAddrs := simapp.ConvertAddrsToValAddrs(addr)
 
 	// set module account coins

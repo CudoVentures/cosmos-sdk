@@ -250,7 +250,7 @@ func (s *IntegrationTestSuite) TestCmdTally() {
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			},
 			false,
-			types.NewTallyResult(s.cfg.BondedTokens, sdk.NewInt(0), sdk.NewInt(0), sdk.NewInt(0)),
+			types.NewTallyResult(s.cfg.BondedTokens.Mul(sdk.NewInt(2)), sdk.NewInt(0), sdk.NewInt(0), sdk.NewInt(0)),
 		},
 	}
 

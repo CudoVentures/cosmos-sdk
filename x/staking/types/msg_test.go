@@ -15,8 +15,8 @@ import (
 )
 
 var (
-	coinPos  = sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
-	coinZero = sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)
+	coinPos, _ = sdk.ParseCoinNormalized("2000000000000000000000000acudos")
+	coinZero   = sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)
 )
 
 func TestMsgDecode(t *testing.T) {
@@ -55,6 +55,7 @@ func TestMsgDecode(t *testing.T) {
 func TestMsgCreateValidator(t *testing.T) {
 	commission1 := types.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec())
 	commission2 := types.NewCommissionRates(sdk.NewDec(5), sdk.NewDec(5), sdk.NewDec(5))
+	msd, _ := sdk.NewIntFromString("2000000000000000000000000")
 
 	tests := []struct {
 		name, moniker, identity, website, securityContact, details string
@@ -65,8 +66,8 @@ func TestMsgCreateValidator(t *testing.T) {
 		bond                                                       sdk.Coin
 		expectPass                                                 bool
 	}{
-		{"basic good", "a", "b", "c", "d", "e", commission1, sdk.OneInt(), valAddr1, pk1, coinPos, true},
-		{"partial description", "", "", "c", "", "", commission1, sdk.OneInt(), valAddr1, pk1, coinPos, true},
+		{"basic good", "a", "b", "c", "d", "e", commission1, msd, valAddr1, pk1, coinPos, true},
+		{"partial description", "", "", "c", "", "", commission1, msd, valAddr1, pk1, coinPos, true},
 		{"empty description", "", "", "", "", "", commission2, sdk.OneInt(), valAddr1, pk1, coinPos, false},
 		{"empty address", "a", "b", "c", "d", "e", commission2, sdk.OneInt(), emptyAddr, pk1, coinPos, false},
 		{"empty pubkey", "a", "b", "c", "d", "e", commission1, sdk.OneInt(), valAddr1, emptyPubkey, coinPos, false},
