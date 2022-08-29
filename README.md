@@ -71,3 +71,15 @@ If you are starting a new app or a new module you can use [Starport](https://git
 ## Disambiguation
 
 This Cosmos-SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. As per our agreement, this disambiguation notice will stay here.
+
+## Changes to Cudos fork of cosmos-sdk
+
+Below are described the changes that Cudos have implemented to the cosmos-sdk for the purpose of Cudos Network.
+
+### Enabling flag parsing for evidence module
+
+This is implemented fue to CUDOS-815 bug. Following query evidence cli command documentation, when passing no arguments it should return all the existing evidences. However, it looks like the command is parsing incorrectly the arguments, since cudos-noded q evidence returns error `Error: accepts at most 1 arg(s), received 5`
+
+The problem was that the settings of the evidence module query Txs was ignoring flags, furthermore considering them as arguments of the call, leading to troublesome behaviour.
+
+The fix is just changing `DisableFlagParsing` to falsein evidence module's `cli/query.go` `GetQueryCmd`.
