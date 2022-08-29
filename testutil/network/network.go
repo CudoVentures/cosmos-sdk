@@ -44,6 +44,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -302,6 +303,7 @@ func New(t *testing.T, cfg Config) *Network {
 		balances := sdk.NewCoins(
 			sdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), cfg.AccountTokens),
 			sdk.NewCoin(cfg.BondDenom, cfg.StakingTokens),
+			sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 		)
 
 		genFiles = append(genFiles, tmCfg.GenesisFile())

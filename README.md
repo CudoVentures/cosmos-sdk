@@ -71,3 +71,15 @@ If you are starting a new app or a new module you can use [Starport](https://git
 ## Disambiguation
 
 This Cosmos-SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. As per our agreement, this disambiguation notice will stay here.
+
+## Changes to Cudos fork of cosmos-sdk
+
+Below are described the changes that Cudos have implemented to the cosmos-sdk for the purpose of Cudos Network.
+
+### Crisis transactions only by admin token holders
+
+In the original cosmos-sdk the crisis module's invariant check messages could be sent by anyone. For Cudos Network we limited them to only `adminToken` holders, since they produce heavy load on the network and could be used as an attack vector.
+
+This is done by adding a simple check if the message sender has at least one `adminToken` in crisis module's `msg_server.go`. The other changes include just a specific error for the case when the caller doesn't have `adminToken` and some test suite changes to accomodate tests for those changes.
+
+To test the cli commands for the invariants, we needed to add `adminToken` to the integration test suite's validator and that made it so all the checks for balances in the suite had to be modified to expect that new token.

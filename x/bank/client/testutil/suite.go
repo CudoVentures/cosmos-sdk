@@ -15,6 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/bank/types"
+	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 )
 
 type IntegrationTestSuite struct {
@@ -115,6 +116,7 @@ func (s *IntegrationTestSuite) TestGetBalancesCmd() {
 				Balances: sdk.NewCoins(
 					sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
 					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
+					sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 				),
 				Pagination: &query.PageResponse{},
 			},
@@ -183,8 +185,9 @@ func (s *IntegrationTestSuite) TestGetCmdQueryTotalSupply() {
 				Supply: sdk.NewCoins(
 					sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
 					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(10))),
+					sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 				),
-				Pagination: &query.PageResponse{Total: 2},
+				Pagination: &query.PageResponse{Total: 3},
 			},
 		},
 		{
@@ -371,6 +374,7 @@ func (s *IntegrationTestSuite) TestNewSendTxCmdGenOnly() {
 	amount := sdk.NewCoins(
 		sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), sdk.NewInt(10)),
 		sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10)),
+		sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 	)
 	args := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -405,6 +409,7 @@ func (s *IntegrationTestSuite) TestNewSendTxCmd() {
 			sdk.NewCoins(
 				sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), sdk.NewInt(10)),
 				sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10)),
+				sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 			),
 			[]string{
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -420,6 +425,7 @@ func (s *IntegrationTestSuite) TestNewSendTxCmd() {
 			sdk.NewCoins(
 				sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), sdk.NewInt(10)),
 				sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10)),
+				sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 			),
 			[]string{
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -437,6 +443,7 @@ func (s *IntegrationTestSuite) TestNewSendTxCmd() {
 			sdk.NewCoins(
 				sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), sdk.NewInt(10)),
 				sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10)),
+				sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 			),
 			[]string{
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
