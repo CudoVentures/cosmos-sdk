@@ -119,7 +119,7 @@ func TestGetImmutable(t *testing.T) {
 	require.Nil(t, err)
 
 	_, err = store.GetImmutable(cID.Version + 1)
-	require.NoError(t, err)
+	require.ErrorContains(t, err, "non existant/pruned height")
 
 	newStore, err := store.GetImmutable(cID.Version - 1)
 	require.NoError(t, err)

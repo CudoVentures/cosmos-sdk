@@ -82,3 +82,15 @@ Ignite CLI is the all-in-one platform to build, launch, and maintain any crypto 
 ## Disambiguation
 
 This Cosmos SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. As per our agreement, this disambiguation notice will stay here.
+
+## Changes to Cudos fork of cosmos-sdk
+
+Below are described the changes that Cudos have implemented to the cosmos-sdk for the purpose of Cudos Network.
+
+### CUDOS-1363 added error when querying pruned height
+
+When querying pruned heights, in the original cosmos-sdk no error is thrown, but rather an empty result is returned. We changed this so an error is thrown.
+
+The main fix is in `store.go` where a check was already present for this, but it was returning `nil` as error. We created a new error type and put it as a return in that case.
+
+A few tests needed refactoring to accomodate this fix as well.

@@ -144,6 +144,9 @@ var (
 	// ErrAppConfig defines an error occurred if min-gas-prices field in BaseConfig is empty.
 	ErrAppConfig = Register(RootCodespace, 40, "error in app.toml")
 
+	//ErrInexistendHeight defines an error occurred if an non existend height is queried. Usually a pruned one
+	ErrInexistendHeight = Register(RootCodespace, 41, "non existant/pruned height")
+
 	// ErrPanic is only set when we recover from a panic, so we know to
 	// redact potentially sensitive system info
 	ErrPanic = Register(UndefinedCodespace, 111222, "panic")
