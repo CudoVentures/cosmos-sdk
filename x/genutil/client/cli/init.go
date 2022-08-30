@@ -104,7 +104,11 @@ func InitCmd(mbm module.BasicManager, defaultNodeHome string) *cobra.Command {
 				return err
 			}
 
-			config.Moniker = args[0]
+			if args[0] != "" {
+				config.Moniker = args[0]
+			} else {
+				return errors.New("moniker cannot be empty")
+			}
 
 			genFile := config.GenesisFile()
 			overwrite, _ := cmd.Flags().GetBool(FlagOverwrite)

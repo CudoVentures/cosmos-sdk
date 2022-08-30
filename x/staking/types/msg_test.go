@@ -66,8 +66,9 @@ func TestMsgCreateValidator(t *testing.T) {
 		expectPass                                                 bool
 	}{
 		{"basic good", "a", "b", "c", "d", "e", commission1, sdk.OneInt(), valAddr1, pk1, coinPos, true},
-		{"partial description", "", "", "c", "", "", commission1, sdk.OneInt(), valAddr1, pk1, coinPos, true},
+		{"partial description", "a", "", "c", "", "", commission1, sdk.OneInt(), valAddr1, pk1, coinPos, true},
 		{"empty description", "", "", "", "", "", commission2, sdk.OneInt(), valAddr1, pk1, coinPos, false},
+		{"empty moniker", "", "", "", "c", "", commission2, sdk.OneInt(), valAddr1, pk1, coinPos, false},
 		{"empty address", "a", "b", "c", "d", "e", commission2, sdk.OneInt(), emptyAddr, pk1, coinPos, false},
 		{"empty pubkey", "a", "b", "c", "d", "e", commission1, sdk.OneInt(), valAddr1, emptyPubkey, coinPos, false},
 		{"empty bond", "a", "b", "c", "d", "e", commission2, sdk.OneInt(), valAddr1, pk1, coinZero, false},
@@ -98,8 +99,9 @@ func TestMsgEditValidator(t *testing.T) {
 		minSelfDelegation                                          sdk.Int
 	}{
 		{"basic good", "a", "b", "c", "d", "e", valAddr1, true, sdk.OneInt()},
-		{"partial description", "", "", "c", "", "", valAddr1, true, sdk.OneInt()},
+		{"partial description", "a", "", "c", "", "", valAddr1, true, sdk.OneInt()},
 		{"empty description", "", "", "", "", "", valAddr1, false, sdk.OneInt()},
+		{"empty moniker", "", "", "", "c", "", valAddr1, false, sdk.OneInt()},
 		{"empty address", "a", "b", "c", "d", "e", emptyAddr, false, sdk.OneInt()},
 		{"nil int", "a", "b", "c", "d", "e", emptyAddr, false, sdk.Int{}},
 	}
