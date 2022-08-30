@@ -82,3 +82,15 @@ Ignite CLI is the all-in-one platform to build, launch, and maintain any crypto 
 ## Disambiguation
 
 This Cosmos SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. As per our agreement, this disambiguation notice will stay here.
+
+## Changes to Cudos fork of cosmos-sdk
+
+Below are described the changes that Cudos have implemented to the cosmos-sdk for the purpose of Cudos Network.
+
+### CUDOS-1464 added authz non-determinism module fix
+
+There was a non-determinism bug in cosmos-sdk, which was quickly fixed in new coosmos-sdk versions. We added it manually so we can have it asap.
+
+The fix consists in sorting the keys in `events.go`'s `TypedEventToEvent`, before iterating over them, so that they are always iterated in the same order.
+
+There was also a test added.
