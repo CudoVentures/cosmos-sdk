@@ -76,6 +76,18 @@ func (c Context) ConsensusParams() *abci.ConsensusParams {
 	return proto.Clone(c.consParams).(*abci.ConsensusParams)
 }
 
+func (c Context) Deadline() (deadline time.Time, ok bool) {
+	return c.ctx.Deadline()
+}
+
+func (c Context) Done() <-chan struct{} {
+	return c.ctx.Done()
+}
+
+func (c Context) Err() error {
+	return c.ctx.Err()
+}
+
 // create a new context
 func NewContext(ms MultiStore, header tmproto.Header, isCheckTx bool, logger log.Logger) Context {
 	// https://github.com/gogo/protobuf/issues/519
@@ -235,6 +247,10 @@ func (c Context) WithValue(key, value interface{}) Context {
 // instead of
 //     ctx.Value(key)
 func (c Context) Value(key interface{}) interface{} {
+	if key == SdkContextKey {
+		return c
+	}
+
 	return c.ctx.Value(key)
 }
 
