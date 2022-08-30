@@ -124,6 +124,7 @@ func DefaultConfig() Config {
 		CleanupDir:        true,
 		SigningAlgo:       string(hd.Secp256k1Type),
 		KeyringOptions:    []keyring.Option{},
+		PatchGenesis:      nil,
 	}
 }
 
