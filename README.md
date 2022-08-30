@@ -71,3 +71,11 @@ If you are starting a new app or a new module you can use [Starport](https://git
 ## Disambiguation
 
 This Cosmos-SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. As per our agreement, this disambiguation notice will stay here.
+
+## Changes to Cudos fork of cosmos-sdk
+
+Below are described the changes that Cudos have implemented to the cosmos-sdk for the purpose of Cudos Network.
+
+### update: tendermint 0.34.19
+
+There was an issue with older versions of Tendermint, where under heavy load connections between nodes would drop and never come back again, until the node is restarted. In Tendermint v0.34.19 this was fixed and that is the reason for this preemptive update.
