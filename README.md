@@ -82,3 +82,11 @@ Ignite CLI is the all-in-one platform to build, launch, and maintain any crypto 
 ## Disambiguation
 
 This Cosmos SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. As per our agreement, this disambiguation notice will stay here.
+
+## Changes to Cudos fork of cosmos-sdk
+
+Below are described the changes that Cudos have implemented to the cosmos-sdk for the purpose of Cudos Network.
+
+### CUDOS-1482 cosmos-sdk fix to validator edit bug
+
+There was a bug in cosmos-sdk v0.45.3 where, when editing a validator info without specifying a new moniker, a "test" moniker was set. This was fixed in newer cosmos-sdk versions, but we wanted this before we update the whole cosmos-sdk, so we implemented it manually.
