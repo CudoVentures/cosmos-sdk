@@ -139,7 +139,7 @@ func TestDuplicatesMsgCreateValidator(t *testing.T) {
 	assert.Equal(t, tmPk1, consKey)
 	assert.Equal(t, valTokens, validator.BondedTokens())
 	assert.Equal(t, valTokens.ToDec(), validator.DelegatorShares)
-	assert.Equal(t, types.Description{}, validator.Description)
+	assert.Equal(t, types.Description{Moniker: "test_moniker"}, validator.Description)
 
 	// two validators can't have the same operator address
 	tstaking.CreateValidator(addr1, pk2, valTokens, false)
@@ -164,7 +164,7 @@ func TestDuplicatesMsgCreateValidator(t *testing.T) {
 	assert.Equal(t, tmPk2, consPk)
 	assert.True(sdk.IntEq(t, valTokens, validator.Tokens))
 	assert.True(sdk.DecEq(t, valTokens.ToDec(), validator.DelegatorShares))
-	assert.Equal(t, types.Description{}, validator.Description)
+	assert.Equal(t, types.Description{Moniker: "test_moniker"}, validator.Description)
 }
 
 func TestInvalidPubKeyTypeMsgCreateValidator(t *testing.T) {
@@ -1185,15 +1185,15 @@ func TestInvalidCoinDenom(t *testing.T) {
 	oneCoin := sdk.NewCoin(sdk.DefaultBondDenom, sdk.OneInt())
 
 	commission := types.NewCommissionRates(sdk.OneDec(), sdk.OneDec(), sdk.ZeroDec())
-	msgCreate, err := types.NewMsgCreateValidator(valA, PKs[0], invalidCoin, types.Description{}, commission, sdk.OneInt())
+	msgCreate, err := types.NewMsgCreateValidator(valA, PKs[0], invalidCoin, types.Description{Moniker: "test_moniker"}, commission, sdk.OneInt())
 	require.NoError(t, err)
 	tstaking.Handle(msgCreate, false)
 
-	msgCreate, err = types.NewMsgCreateValidator(valA, PKs[0], validCoin, types.Description{}, commission, sdk.OneInt())
+	msgCreate, err = types.NewMsgCreateValidator(valA, PKs[0], validCoin, types.Description{Moniker: "test_moniker"}, commission, sdk.OneInt())
 	require.NoError(t, err)
 	tstaking.Handle(msgCreate, true)
 
-	msgCreate, err = types.NewMsgCreateValidator(valB, PKs[1], validCoin, types.Description{}, commission, sdk.OneInt())
+	msgCreate, err = types.NewMsgCreateValidator(valB, PKs[1], validCoin, types.Description{Moniker: "test_moniker"}, commission, sdk.OneInt())
 	require.NoError(t, err)
 	tstaking.Handle(msgCreate, true)
 

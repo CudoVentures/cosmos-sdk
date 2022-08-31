@@ -31,6 +31,7 @@ func TestUpdateDescription(t *testing.T) {
 	d1 := types.Description{
 		Website: "https://validator.cosmos",
 		Details: "Test validator",
+		Moniker: "sd",
 	}
 
 	d2 := types.Description{
@@ -41,10 +42,15 @@ func TestUpdateDescription(t *testing.T) {
 	}
 
 	d3 := types.Description{
-		Moniker:  "",
+		Moniker:  "a",
 		Identity: "",
 		Website:  "",
 		Details:  "",
+	}
+
+	d4 := types.Description{
+		Moniker:  "",
+		Identity: "b",
 	}
 
 	d, err := d1.UpdateDescription(d2)
@@ -54,6 +60,9 @@ func TestUpdateDescription(t *testing.T) {
 	d, err = d1.UpdateDescription(d3)
 	require.Nil(t, err)
 	require.Equal(t, d, d3)
+
+	d, err = d1.UpdateDescription(d4)
+	require.Error(t, err)
 }
 
 func TestABCIValidatorUpdate(t *testing.T) {
