@@ -1,3 +1,4 @@
+//go:build norace
 // +build norace
 
 package rest_test
@@ -13,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/bank/types"
+	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 )
 
 type IntegrationTestSuite struct {
@@ -90,6 +92,7 @@ func (s *IntegrationTestSuite) TestQueryBalancesRequestHandlerFn() {
 			sdk.NewCoins(
 				sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
 				sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
+				sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 			),
 		},
 		{
@@ -100,6 +103,7 @@ func (s *IntegrationTestSuite) TestQueryBalancesRequestHandlerFn() {
 			sdk.NewCoins(
 				sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
 				sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
+				sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 			),
 		},
 		{
@@ -161,8 +165,9 @@ func (s *IntegrationTestSuite) TestTotalSupplyHandlerFn() {
 				Supply: sdk.NewCoins(
 					sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
 					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(10))),
+					sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 				),
-				Pagination: &query.PageResponse{Total: 2},
+				Pagination: &query.PageResponse{Total: 3},
 			},
 		},
 		{
