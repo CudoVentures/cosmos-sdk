@@ -50,53 +50,23 @@ breaking changes.
 
 ## Quick Start
 
-To learn how the SDK works from a high-level perspective, go to the [SDK Intro](./docs/intro/overview.md).
+To learn how the Cosmos SDK works from a high-level perspective, see the Cosmos SDK [High-Level Intro](./docs/intro/overview.md).
 
-If you want to get started quickly and learn how to build on top of the SDK, please follow the [SDK Application Tutorial](https://tutorials.cosmos.network/nameservice/tutorial/00-intro.html). You can also fork the tutorial's repository to get started building your own Cosmos SDK application.
+If you want to get started quickly and learn how to build on top of Cosmos SDK, visit [Cosmos SDK Tutorials](https://tutorials.cosmos.network). You can also fork the tutorial's repository to get started building your own Cosmos SDK application.
 
-For more, please go to the [Cosmos SDK Docs](./docs/).
+For more information, see the [Cosmos SDK Documentation](./docs/).
 
-## Cosmos Hub Mainnet
+## Contributing
 
-The Cosmos Hub application, `gaia`, has moved to its [own repository](https://github.com/cosmos/gaia). Go there to join the Cosmos Hub mainnet and more.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for details how to contribute and participate in our [dev calls](./CONTRIBUTING.md#teams-dev-calls).
+If you want to follow the updates or learn more about the latest design then join our [Discord](https://discord.com/invite/cosmosnetwork).
 
-## Interblockchain Communication (IBC)
+## Tools and Frameworks
 
-The IBC module for the SDK has moved to its [own repository](https://github.com/cosmos/ibc-go). Go there to build and integrate with the IBC module.
+The Cosmos ecosystem is vast. We will only make a few notable mentions here.
 
-## Starport
-
-If you are starting a new app or a new module you can use [Starport](https://github.com/tendermint/starport) to help you get started and speed up development. If you have any questions or find a bug, feel free to open an issue in the repo.
-
-## Disambiguation
-
-This Cosmos-SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. As per our agreement, this disambiguation notice will stay here.
-
-## Changes to Cudos fork of cosmos-sdk
-
-Below are described the changes that Cudos have implemented to the cosmos-sdk for the purpose of Cudos Network.
-
-### MinSelfDelegation minimum value 2000000000000000000000000
-
-When validator is created there is a setting being set about the minimum self delegation amount required for the validator to be operational. For Cudos Network this is required to be at least 2M CUDOS. This is achieved with a check in the `CreateValidator` function in staking module's `msg_server.go`. Also we've added a check in the standard `ValdiateBasic` function for `MsgCreateValidator`.
-
-There is also an additional error type added in `types/errors.go`.
-
-The majority of changes are for the tests. Since we now require validators to have that setting, we also have to rise the actual self delegation they put on themselves. From there we have to give the addresses more funds, the calculated rewards are different and so on. That makes it so many changes in the tests are required just for this small setting change.
-
-### [CUDOS-805] Empty moniker is not allowed for validators
-
-This is implemented due to CUDOS-805. Validators with empty monikers should not be allowed on Cudos Network.
-
-This is achieved through checks added in `validator.go`'s `EnsureLength` function, in the `ValidateBasic` functions for Create  and edit validator messages and in the functions for cli tx. Some tests where validators are created had to be edited as well, to set them up with any mnemonic as opposed to the default empty mnemonic.
-
-### Crisis transactions only by admin token holders
-
-In the original cosmos-sdk the crisis module's invariant check messages could be sent by anyone. For Cudos Network we limited them to only `adminToken` holders, since they produce heavy load on the network and could be used as an attack vector.
-
-This is done by adding a simple check if the message sender has at least one `adminToken` in crisis module's `msg_server.go`. The other changes include just a specific error for the case when the caller doesn't have `adminToken` and some test suite changes to accomodate tests for those changes.
-
-To test the cli commands for the invariants, we needed to add `adminToken` to the integration test suite's validator and that made it so all the checks for balances in the suite had to be modified to expect that new token.
++ [Tools](https://v1.cosmos.network/tools): notable frameworks and modules.
++ [CosmJS](https://github.com/cosmos/cosmjs): the Swiss Army knife to power JavaScript based client solutions.
 
 ### added unsafe-reset-all on root level
 
@@ -112,4 +82,12 @@ This is achieved by changing the `BurnCoins` function in bank module's keeper. I
 
 For it to work the app's distribution keeper should be passed to the bank keeper. Because of this we've added a check in the `BurnCoins` function to check this. There is also another check for the denom of the coins being burned - if it is `acudos`, transfer them to the community pool, if it is any other - use the old logic to burn them.
 
-There is also a new test added to check this functionality and a log anytime burn or transfer to community pool is done.
+This Cosmos SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. As per our agreement, this disambiguation notice will stay here.
+
+### CUDOS-1363 added error when querying pruned height
+
+When querying pruned heights, in the original cosmos-sdk no error is thrown, but rather an empty result is returned. We changed this so an error is thrown.
+
+The main fix is in `store.go` where a check was already present for this, but it was returning `nil` as error. We created a new error type and put it as a return in that case.
+
+A few tests needed refactoring to accomodate this fix as well.
