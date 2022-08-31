@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!--
 parent:
   order: false
@@ -76,6 +75,14 @@ This Cosmos-SDK project is not related to the [React-Cosmos](https://github.com/
 ## Changes to Cudos fork of cosmos-sdk
 
 Below are described the changes that Cudos have implemented to the cosmos-sdk for the purpose of Cudos Network.
+
+### MinSelfDelegation minimum value 2000000000000000000000000
+
+When validator is created there is a setting being set about the minimum self delegation amount required for the validator to be operational. For Cudos Network this is required to be at least 2M CUDOS. This is achieved with a check in the `CreateValidator` function in staking module's `msg_server.go`. Also we've added a check in the standard `ValdiateBasic` function for `MsgCreateValidator`.
+
+There is also an additional error type added in `types/errors.go`.
+
+The majority of changes are for the tests. Since we now require validators to have that setting, we also have to rise the actual self delegation they put on themselves. From there we have to give the addresses more funds, the calculated rewards are different and so on. That makes it so many changes in the tests are required just for this small setting change.
 
 ### [CUDOS-805] Empty moniker is not allowed for validators
 

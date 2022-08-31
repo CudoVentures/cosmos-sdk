@@ -1,3 +1,4 @@
+//go:build norace
 // +build norace
 
 package rest_test
@@ -59,6 +60,8 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 func (s *IntegrationTestSuite) TestQueryGRPC() {
 	val := s.network.Validators[0]
 	baseURL := val.APIAddress
+	amount, _ := sdk.NewDecFromStr("10000000000000000000000000")
+
 	testCases := []struct {
 		name     string
 		url      string
@@ -93,7 +96,7 @@ func (s *IntegrationTestSuite) TestQueryGRPC() {
 			},
 			&minttypes.QueryAnnualProvisionsResponse{},
 			&minttypes.QueryAnnualProvisionsResponse{
-				AnnualProvisions: sdk.NewDec(500000000),
+				AnnualProvisions: amount,
 			},
 		},
 	}

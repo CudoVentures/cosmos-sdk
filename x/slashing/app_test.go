@@ -41,8 +41,8 @@ func checkValidatorSigningInfo(t *testing.T, app *simapp.SimApp, addr sdk.ConsAd
 }
 
 func TestSlashingMsgs(t *testing.T) {
-	genTokens := sdk.TokensFromConsensusPower(42, sdk.DefaultPowerReduction)
-	bondTokens := sdk.TokensFromConsensusPower(10, sdk.DefaultPowerReduction)
+	genTokens := sdk.TokensFromConsensusPower(4200000, sdk.DefaultPowerReduction)
+	bondTokens := sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction)
 	genCoin := sdk.NewCoin(sdk.DefaultBondDenom, genTokens)
 	bondCoin := sdk.NewCoin(sdk.DefaultBondDenom, bondTokens)
 
@@ -64,7 +64,7 @@ func TestSlashingMsgs(t *testing.T) {
 	commission := stakingtypes.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec())
 
 	createValidatorMsg, err := stakingtypes.NewMsgCreateValidator(
-		sdk.ValAddress(addr1), valKey.PubKey(), bondCoin, description, commission, sdk.OneInt(),
+		sdk.ValAddress(addr1), valKey.PubKey(), bondCoin, description, commission, bondTokens,
 	)
 	require.NoError(t, err)
 

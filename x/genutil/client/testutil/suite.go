@@ -50,6 +50,9 @@ func (s *IntegrationTestSuite) TestGenTxCmd() {
 	val := s.network.Validators[0]
 	dir := s.T().TempDir()
 
+	amountValue := sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction)
+	amount := sdk.NewCoin(s.cfg.BondDenom, amountValue)
+
 	cmd := cli.GenTxCmd(
 		simapp.ModuleBasics,
 		val.ClientCtx.TxConfig, banktypes.GenesisBalancesIterator{}, val.ClientCtx.HomeDir)
@@ -60,10 +63,10 @@ func (s *IntegrationTestSuite) TestGenTxCmd() {
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, client.ClientContextKey, &clientCtx)
 
-	amount := sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(12))
 	genTxFile := filepath.Join(dir, "myTx")
 	cmd.SetArgs([]string{
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.network.Config.ChainID),
+		fmt.Sprintf("--%s=%s", stakingcli.FlagMinSelfDelegation, amountValue.String()),
 		fmt.Sprintf("--%s=%s", flags.FlagOutputDocument, genTxFile),
 		val.Moniker,
 		amount.String(),
@@ -114,6 +117,7 @@ func (s *IntegrationTestSuite) TestGenTxCmdPubkey() {
 	cmd.SetArgs([]string{
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.network.Config.ChainID),
 		fmt.Sprintf("--%s=%s", flags.FlagOutputDocument, genTxFile),
+
 		fmt.Sprintf("--%s={\"key\":\"BOIkjkFruMpfOFC9oNPhiJGfmY2pHF/gwHdLDLnrnS0=\"}", stakingcli.FlagPubKey),
 		val.Moniker,
 		amount.String(),

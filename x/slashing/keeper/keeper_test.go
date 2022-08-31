@@ -23,7 +23,7 @@ func TestUnJailNotBonded(t *testing.T) {
 	p.MaxValidators = 5
 	app.StakingKeeper.SetParams(ctx, p)
 
-	addrDels := simapp.AddTestAddrsIncremental(app, ctx, 6, app.StakingKeeper.TokensFromConsensusPower(ctx, 200))
+	addrDels := simapp.AddTestAddrsIncremental(app, ctx, 6, app.StakingKeeper.TokensFromConsensusPower(ctx, 2000001))
 	valAddrs := simapp.ConvertAddrsToValAddrs(addrDels)
 	pks := simapp.CreateTestPubKeys(6)
 	tstaking := teststaking.NewHelper(t, ctx, app.StakingKeeper)
@@ -31,7 +31,7 @@ func TestUnJailNotBonded(t *testing.T) {
 	// create max (5) validators all with the same power
 	for i := uint32(0); i < p.MaxValidators; i++ {
 		addr, val := valAddrs[i], pks[i]
-		tstaking.CreateValidatorWithValPower(addr, val, 100, true)
+		tstaking.CreateValidatorWithValPower(addr, val, 2000001, true)
 	}
 
 	staking.EndBlocker(ctx, app.StakingKeeper)
@@ -39,7 +39,7 @@ func TestUnJailNotBonded(t *testing.T) {
 
 	// create a 6th validator with less power than the cliff validator (won't be bonded)
 	addr, val := valAddrs[5], pks[5]
-	amt := app.StakingKeeper.TokensFromConsensusPower(ctx, 50)
+	amt := app.StakingKeeper.TokensFromConsensusPower(ctx, 2000000)
 	msg := tstaking.CreateValidatorMsg(addr, val, amt)
 	msg.MinSelfDelegation = amt
 	tstaking.Handle(msg, true)

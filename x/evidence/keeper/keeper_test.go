@@ -36,7 +36,7 @@ var (
 	}
 
 	// The default power validators are initialized to have within tests
-	initAmt   = sdk.TokensFromConsensusPower(200, sdk.DefaultPowerReduction)
+	initAmt   = sdk.TokensFromConsensusPower(20000000, sdk.DefaultPowerReduction)
 	initCoins = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initAmt))
 )
 

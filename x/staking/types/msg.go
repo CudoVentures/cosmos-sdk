@@ -16,6 +16,7 @@ const (
 	TypeMsgCreateValidator = "create_validator"
 	TypeMsgDelegate        = "delegate"
 	TypeMsgBeginRedelegate = "begin_redelegate"
+	MinSelfDelegation      = "2000000000000000000000000"
 )
 
 var (
@@ -138,6 +139,12 @@ func (msg MsgCreateValidator) ValidateBasic() error {
 			sdkerrors.ErrInvalidRequest,
 			"minimum self delegation must be a positive integer",
 		)
+	}
+
+	msd, _ := sdk.NewIntFromString(MinSelfDelegation)
+
+	if msg.MinSelfDelegation.LT(msd) {
+		return ErrMinSelfDelegationTooLow
 	}
 
 	if msg.Value.Amount.LT(msg.MinSelfDelegation) {

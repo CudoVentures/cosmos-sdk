@@ -91,7 +91,7 @@ func (s *IntegrationTestSuite) TestQueryBalancesRequestHandlerFn() {
 			&sdk.Coins{},
 			sdk.NewCoins(
 				sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
-				sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
+				sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens.Mul(sdk.NewInt(2)))),
 				sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 			),
 		},
@@ -102,7 +102,7 @@ func (s *IntegrationTestSuite) TestQueryBalancesRequestHandlerFn() {
 			&sdk.Coins{},
 			sdk.NewCoins(
 				sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
-				sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
+				sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens.Mul(sdk.NewInt(2)))),
 				sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 			),
 		},
@@ -111,7 +111,7 @@ func (s *IntegrationTestSuite) TestQueryBalancesRequestHandlerFn() {
 			fmt.Sprintf("%s/bank/balances/%s?denom=%s", baseURL, val.Address, s.cfg.BondDenom),
 			-1,
 			&sdk.Coin{},
-			sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens)),
+			sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Sub(s.cfg.BondedTokens.Mul(sdk.NewInt(2)))),
 		},
 		{
 			"total account balance of a bogus denom",
@@ -164,7 +164,7 @@ func (s *IntegrationTestSuite) TestTotalSupplyHandlerFn() {
 			&types.QueryTotalSupplyResponse{
 				Supply: sdk.NewCoins(
 					sdk.NewCoin(fmt.Sprintf("%stoken", val.Moniker), s.cfg.AccountTokens),
-					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(10))),
+					sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(205_972_583_942_358_070))),
 					sdk.NewCoin(crisiskeeper.AdminTokenDenom, sdk.OneInt()),
 				),
 				Pagination: &query.PageResponse{Total: 3},
@@ -174,7 +174,7 @@ func (s *IntegrationTestSuite) TestTotalSupplyHandlerFn() {
 			"total supply of a specific denom",
 			fmt.Sprintf("%s/bank/total/%s?height=1", baseURL, s.cfg.BondDenom),
 			&sdk.Coin{},
-			sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(10))),
+			sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens.Add(sdk.NewInt(205_972_583_942_358_070))),
 		},
 		{
 			"total supply of a bogus denom",

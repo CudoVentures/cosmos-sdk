@@ -15,8 +15,8 @@ import (
 )
 
 var (
-	coinPos  = sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
-	coinZero = sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)
+	coinPos, _ = sdk.ParseCoinNormalized("2000000000000000000000000acudos")
+	coinZero   = sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)
 )
 
 func TestMsgDecode(t *testing.T) {
@@ -55,6 +55,7 @@ func TestMsgDecode(t *testing.T) {
 func TestMsgCreateValidator(t *testing.T) {
 	commission1 := types.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec())
 	commission2 := types.NewCommissionRates(sdk.NewDec(5), sdk.NewDec(5), sdk.NewDec(5))
+	msd, _ := sdk.NewIntFromString("2000000000000000000000000")
 
 	tests := []struct {
 		name, moniker, identity, website, securityContact, details string

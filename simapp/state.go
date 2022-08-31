@@ -147,11 +147,18 @@ func AppStateRandomizedFn(
 
 	// generate a random amount of initial stake coins and a random initial
 	// number of bonded accounts
-	var initialStake, numInitiallyBonded int64
+	var initialStake sdk.Int
+	var numInitiallyBonded int64
+
+	minSelfDeleg := sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction)
+
 	appParams.GetOrGenerate(
 		cdc, simappparams.StakePerAccount, &initialStake, r,
-		func(r *rand.Rand) { initialStake = r.Int63n(1e12) },
+		func(r *rand.Rand) {
+			initialStake = minSelfDeleg.Add(sdk.NewInt(r.Int63n(10)).Mul(sdk.NewInt(10000000)).Mul(minSelfDeleg))
+		},
 	)
+
 	appParams.GetOrGenerate(
 		cdc, simappparams.InitiallyBondedValidators, &numInitiallyBonded, r,
 		func(r *rand.Rand) { numInitiallyBonded = int64(r.Intn(300)) },
@@ -164,10 +171,10 @@ func AppStateRandomizedFn(
 	fmt.Printf(
 		`Selected randomly generated parameters for simulated genesis:
 {
-  stake_per_account: "%d",
-  initially_bonded_validators: "%d"
+	stake_per_account: "%s",
+	initially_bonded_validators: "%d"
 }
-`, initialStake, numInitiallyBonded,
+`, initialStake.String(), numInitiallyBonded,
 	)
 
 	simState := &module.SimulationState{

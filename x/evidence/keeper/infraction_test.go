@@ -13,7 +13,7 @@ func (suite *KeeperTestSuite) TestHandleDoubleSign() {
 	ctx := suite.ctx.WithIsCheckTx(false).WithBlockHeight(1)
 	suite.populateValidators(ctx)
 
-	power := int64(100)
+	power := int64(2000000)
 	stakingParams := suite.app.StakingKeeper.GetParams(ctx)
 	operatorAddr, val := valAddresses[0], pubkeys[0]
 	tstaking := teststaking.NewHelper(suite.T(), ctx, suite.app.StakingKeeper)
@@ -29,7 +29,7 @@ func (suite *KeeperTestSuite) TestHandleDoubleSign() {
 	suite.Equal(selfDelegation, suite.app.StakingKeeper.Validator(ctx, operatorAddr).GetBondedTokens())
 
 	// handle a signature to set signing info
-	suite.app.SlashingKeeper.HandleValidatorSignature(ctx, val.Address(), selfDelegation.Int64(), true)
+	suite.app.SlashingKeeper.HandleValidatorSignature(ctx, val.Address(), power, true)
 
 	// double sign less than max age
 	oldTokens := suite.app.StakingKeeper.Validator(ctx, operatorAddr).GetTokens()

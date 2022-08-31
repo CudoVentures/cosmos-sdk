@@ -352,8 +352,8 @@ func TestIncrementsMsgDelegate(t *testing.T) {
 }
 
 func TestEditValidatorDecreaseMinSelfDelegation(t *testing.T) {
-	initPower := int64(100)
-	initBond := sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction)
+	initPower := int64(2000000)
+	initBond := sdk.TokensFromConsensusPower(initPower, sdk.DefaultPowerReduction)
 	app, ctx, _, valAddrs := bootstrapHandlerGenesisTest(t, initPower, 1, sdk.TokensFromConsensusPower(initPower, sdk.DefaultPowerReduction))
 
 	validatorAddr := valAddrs[0]
@@ -361,7 +361,7 @@ func TestEditValidatorDecreaseMinSelfDelegation(t *testing.T) {
 
 	// create validator
 	msgCreateValidator := tstaking.CreateValidatorMsg(validatorAddr, PKs[0], initBond)
-	msgCreateValidator.MinSelfDelegation = sdk.NewInt(2)
+	msgCreateValidator.MinSelfDelegation = initBond
 	tstaking.Handle(msgCreateValidator, true)
 
 	// must end-block
@@ -377,14 +377,14 @@ func TestEditValidatorDecreaseMinSelfDelegation(t *testing.T) {
 		"initBond: %v\ngotBond: %v\nbond: %v\n",
 		initBond, gotBond, bond)
 
-	newMinSelfDelegation := sdk.OneInt()
+	newMinSelfDelegation := initBond.Sub(sdk.OneInt())
 	msgEditValidator := types.NewMsgEditValidator(validatorAddr, types.Description{}, nil, &newMinSelfDelegation)
 	tstaking.Handle(msgEditValidator, false)
 }
 
 func TestEditValidatorIncreaseMinSelfDelegationBeyondCurrentBond(t *testing.T) {
-	initPower := int64(100)
-	initBond := sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction)
+	initPower := int64(2000000)
+	initBond := sdk.TokensFromConsensusPower(initPower, sdk.DefaultPowerReduction)
 
 	app, ctx, _, valAddrs := bootstrapHandlerGenesisTest(t, initPower, 2, sdk.TokensFromConsensusPower(initPower, sdk.DefaultPowerReduction))
 	validatorAddr := valAddrs[0]
@@ -392,7 +392,7 @@ func TestEditValidatorIncreaseMinSelfDelegationBeyondCurrentBond(t *testing.T) {
 
 	// create validator
 	msgCreateValidator := tstaking.CreateValidatorMsg(validatorAddr, PKs[0], initBond)
-	msgCreateValidator.MinSelfDelegation = sdk.NewInt(2)
+	msgCreateValidator.MinSelfDelegation = initBond
 	tstaking.Handle(msgCreateValidator, true)
 
 	// must end-block
@@ -1174,12 +1174,12 @@ func TestInvalidMsg(t *testing.T) {
 }
 
 func TestInvalidCoinDenom(t *testing.T) {
-	initPower := int64(1000)
+	initPower := int64(2000000)
 	app, ctx, delAddrs, valAddrs := bootstrapHandlerGenesisTest(t, initPower, 3, sdk.TokensFromConsensusPower(initPower, sdk.DefaultPowerReduction))
 	valA, valB, delAddr := valAddrs[0], valAddrs[1], delAddrs[2]
 	tstaking := teststaking.NewHelper(t, ctx, app.StakingKeeper)
 
-	valTokens := app.StakingKeeper.TokensFromConsensusPower(ctx, 100)
+	valTokens := app.StakingKeeper.TokensFromConsensusPower(ctx, 2000000)
 	invalidCoin := sdk.NewCoin("churros", valTokens)
 	validCoin := sdk.NewCoin(sdk.DefaultBondDenom, valTokens)
 	oneCoin := sdk.NewCoin(sdk.DefaultBondDenom, sdk.OneInt())
@@ -1193,7 +1193,7 @@ func TestInvalidCoinDenom(t *testing.T) {
 	require.NoError(t, err)
 	tstaking.Handle(msgCreate, true)
 
-	msgCreate, err = types.NewMsgCreateValidator(valB, PKs[1], validCoin, types.Description{Moniker: "test_moniker"}, commission, sdk.OneInt())
+	msgCreate, err = types.NewMsgCreateValidator(valB, PKs[1], validCoin, types.Description{}, commission, sdk.OneInt())
 	require.NoError(t, err)
 	tstaking.Handle(msgCreate, true)
 
