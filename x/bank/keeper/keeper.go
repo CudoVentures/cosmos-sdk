@@ -11,6 +11,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestexported "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 	"github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -50,11 +51,12 @@ type Keeper interface {
 type BaseKeeper struct {
 	BaseSendKeeper
 
-	ak                     types.AccountKeeper
-	cdc                    codec.BinaryCodec
-	storeKey               sdk.StoreKey
-	paramSpace             paramtypes.Subspace
-	mintCoinsRestrictionFn MintingRestrictionFn
+	ak         types.AccountKeeper
+	cdc        codec.BinaryCodec
+	storeKey   sdk.StoreKey
+	paramSpace paramtypes.Subspace
+	dk         distrkeeper.Keeper
+	dkSet      bool
 }
 
 type MintingRestrictionFn func(ctx sdk.Context, coins sdk.Coins) error
@@ -449,14 +451,30 @@ func (k BaseKeeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 		return err
 	}
 
+	var resultString string
+
 	for _, amount := range amounts {
-		supply := k.GetSupply(ctx, amount.GetDenom())
-		supply = supply.Sub(amount)
-		k.setSupply(ctx, supply)
+		if k.dkSet && amount.Denom == "acudos" {
+			// transfer collected fees to the distribution module account
+			err := k.addCoins(ctx, k.dk.GetDistributionAccount(ctx).GetAddress(), sdk.Coins{amount})
+			if err != nil {
+				panic(err)
+			}
+
+			fp := k.dk.GetFeePool(ctx)
+			fp.CommunityPool = fp.CommunityPool.Add(sdk.NewDecCoinFromCoin(amount))
+			k.dk.SetFeePool(ctx, fp)
+			resultString = "moved tokens from module account to community pool"
+		} else {
+			supply := k.GetSupply(ctx, amount.GetDenom())
+			supply = supply.Sub(amount)
+			k.setSupply(ctx, supply)
+			resultString = "burned tokens from module account"
+		}
 	}
 
 	logger := k.Logger(ctx)
-	logger.Info("burned tokens from module account", "amount", amounts.String(), "from", moduleName)
+	logger.Info(resultString, "amount", amounts.String(), "from", moduleName)
 
 	// emit burn event
 	ctx.EventManager().EmitEvent(
@@ -464,6 +482,11 @@ func (k BaseKeeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Co
 	)
 
 	return nil
+}
+
+func (k *BaseKeeper) SetDistrKeeper(dk distrkeeper.Keeper) {
+	(*k).dk = dk
+	(*k).dkSet = true
 }
 
 // setSupply sets the supply for the given coin
