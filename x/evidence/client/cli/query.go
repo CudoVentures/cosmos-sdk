@@ -32,7 +32,7 @@ $ %s query %s --page=2 --limit=50
 			),
 		),
 		Args:                       cobra.MaximumNArgs(1),
-		DisableFlagParsing:         true,
+		DisableFlagParsing:         false,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       QueryEvidenceCmd(),
 	}
