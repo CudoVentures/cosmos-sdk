@@ -179,3 +179,15 @@ The problem was that the settings of the evidence module query Txs was ignoring 
 
 The fix is just changing `DisableFlagParsing` to falsein evidence module's `cli/query.go` `GetQueryCmd`.
 >>>>>>> cudos-v0.45.3-fix-enabling-flag-parsing-for-evidence-module
+
+## Changes to Cudos fork of cosmos-sdk
+
+Below are described the changes that Cudos have implemented to the cosmos-sdk for the purpose of Cudos Network.
+
+### CUDOS-1464 added authz non-determinism module fix
+
+There was a non-determinism bug in cosmos-sdk, which was quickly fixed in new coosmos-sdk versions. We added it manually so we can have it asap.
+
+The fix consists in sorting the keys in `events.go`'s `TypedEventToEvent`, before iterating over them, so that they are always iterated in the same order.
+
+There was also a test added.
