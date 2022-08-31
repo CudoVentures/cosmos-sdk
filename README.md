@@ -89,8 +89,10 @@ Below are described the changes that Cudos have implemented to the cosmos-sdk fo
 
 ### CUDOS-1464 added authz non-determinism module fix
 
-There was a non-determinism bug in cosmos-sdk, which was quickly fixed in new coosmos-sdk versions. We added it manually so we can have it asap.
+There was a non-determinism bug in cosmos-sdk, which was quickly fixed in new cosmos-sdk versions. We added it manually so we can have it asap.
 
 The fix consists in sorting the keys in `events.go`'s `TypedEventToEvent`, before iterating over them, so that they are always iterated in the same order.
 
 There was also a test added.
+
+The official PR of cosmos-sdk is available [here](https://github.com/cosmos/cosmos-sdk/pull/12781/files).
