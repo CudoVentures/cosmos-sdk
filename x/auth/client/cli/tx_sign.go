@@ -51,8 +51,10 @@ account key. It implies --signature-only.
 	cmd.Flags().String(flags.FlagOutputDocument, "", "The document will be written to the given file instead of STDOUT")
 	cmd.Flags().Bool(flagSigOnly, true, "Print only the generated signature, then exit")
 	cmd.Flags().String(flags.FlagChainID, "", "network chain ID")
-	cmd.MarkFlagRequired(flags.FlagFrom)
+
 	flags.AddTxFlagsToCmd(cmd)
+
+	cmd.MarkFlagRequired(flags.FlagFrom)
 
 	return cmd
 }
@@ -99,7 +101,7 @@ func makeSignBatchCmd() func(cmd *cobra.Command, args []string) error {
 			}
 			if ms == "" {
 				from, _ := cmd.Flags().GetString(flags.FlagFrom)
-				_, fromName, _, err := client.GetFromFields(txFactory.Keybase(), from, clientCtx.GenerateOnly)
+				_, fromName, _, err := client.GetFromFields(clientCtx, txFactory.Keybase(), from)
 				if err != nil {
 					return fmt.Errorf("error getting account from keybase: %w", err)
 				}
@@ -108,7 +110,7 @@ func makeSignBatchCmd() func(cmd *cobra.Command, args []string) error {
 					return err
 				}
 			} else {
-				multisigAddr, _, _, err := client.GetFromFields(txFactory.Keybase(), ms, clientCtx.GenerateOnly)
+				multisigAddr, _, _, err := client.GetFromFields(clientCtx, txFactory.Keybase(), ms)
 				if err != nil {
 					return fmt.Errorf("error getting account from keybase: %w", err)
 				}
@@ -185,8 +187,10 @@ be generated via the 'multisign' command.
 	cmd.Flags().String(flags.FlagOutputDocument, "", "The document will be written to the given file instead of STDOUT")
 	cmd.Flags().String(flags.FlagChainID, "", "The network chain ID")
 	cmd.Flags().Bool(flagAmino, false, "Generate Amino encoded JSON suitable for submiting to the txs REST endpoint")
-	cmd.MarkFlagRequired(flags.FlagFrom)
+
 	flags.AddTxFlagsToCmd(cmd)
+
+	cmd.MarkFlagRequired(flags.FlagFrom)
 
 	return cmd
 }
@@ -228,7 +232,7 @@ func makeSignCmd() func(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		from, _ := cmd.Flags().GetString(flags.FlagFrom)
-		_, fromName, _, err := client.GetFromFields(txF.Keybase(), from, clientCtx.GenerateOnly)
+		_, fromName, _, err := client.GetFromFields(clientCtx, txF.Keybase(), from)
 		if err != nil {
 			return fmt.Errorf("error getting account from keybase: %w", err)
 		}
@@ -238,7 +242,7 @@ func makeSignCmd() func(cmd *cobra.Command, args []string) error {
 			multisigAddr, err := sdk.AccAddressFromBech32(multisig)
 			if err != nil {
 				// Bech32 decode error, maybe it's a name, we try to fetch from keyring
-				multisigAddr, _, _, err = client.GetFromFields(txFactory.Keybase(), multisig, clientCtx.GenerateOnly)
+				multisigAddr, _, _, err = client.GetFromFields(clientCtx, txFactory.Keybase(), multisig)
 				if err != nil {
 					return fmt.Errorf("error getting account from keybase: %w", err)
 				}
