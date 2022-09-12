@@ -279,19 +279,9 @@ func (f Factory) BuildSimTx(msgs ...sdk.Msg) ([]byte, error) {
 		return nil, err
 	}
 
-	// use the first element from the list of keys in order to generate a valid
-	// pubkey that supports multiple algorithms
-
-	var pk cryptotypes.PubKey = &secp256k1.PubKey{} // use default public key type
-
-	if f.keybase != nil {
-		infos, _ := f.keybase.List()
-		if len(infos) == 0 {
-			return nil, errors.New("cannot build signature for simulation, key infos slice is empty")
-		}
-
-		// take the first info record just for simulation purposes
-		pk = infos[0].GetPubKey()
+	pk, err := f.getSimPK()
+	if err != nil {
+		return nil, err
 	}
 
 	// Create an empty signature literal as the ante handler will populate with a
@@ -317,6 +307,7 @@ func (f Factory) BuildSimTx(msgs ...sdk.Msg) ([]byte, error) {
 // Ref: https://github.com/cosmos/cosmos-sdk/issues/11283
 func (f Factory) getSimPK() (cryptotypes.PubKey, error) {
 	var (
+		ok bool
 		pk cryptotypes.PubKey = &secp256k1.PubKey{} // use default public key type
 	)
 
@@ -330,7 +321,7 @@ func (f Factory) getSimPK() (cryptotypes.PubKey, error) {
 
 		// take the first record just for simulation purposes
 		pk = records[0].GetPubKey()
-		if pk == nil {
+		if !ok {
 			return nil, errors.New("cannot build signature for simulation, failed to convert proto Any to public key")
 		}
 	}
