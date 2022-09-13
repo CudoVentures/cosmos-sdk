@@ -307,7 +307,6 @@ func (f Factory) BuildSimTx(msgs ...sdk.Msg) ([]byte, error) {
 // Ref: https://github.com/cosmos/cosmos-sdk/issues/11283
 func (f Factory) getSimPK() (cryptotypes.PubKey, error) {
 	var (
-		ok bool
 		pk cryptotypes.PubKey = &secp256k1.PubKey{} // use default public key type
 	)
 
@@ -321,7 +320,7 @@ func (f Factory) getSimPK() (cryptotypes.PubKey, error) {
 
 		// take the first record just for simulation purposes
 		pk = records[0].GetPubKey()
-		if !ok {
+		if pk == nil {
 			return nil, errors.New("cannot build signature for simulation, failed to convert proto Any to public key")
 		}
 	}
