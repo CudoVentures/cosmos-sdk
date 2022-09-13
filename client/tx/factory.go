@@ -310,6 +310,34 @@ func (f Factory) BuildSimTx(msgs ...sdk.Msg) ([]byte, error) {
 	return f.txConfig.TxEncoder()(txb.GetTx())
 }
 
+// getSimPK gets the public key to use for building a simulation tx.
+// Note, we should only check for keys in the keybase if we are in simulate and execute mode,
+// e.g. when using --gas=auto.
+// When using --dry-run, we are is simulation mode only and should not check the keybase.
+// Ref: https://github.com/cosmos/cosmos-sdk/issues/11283
+func (f Factory) getSimPK() (cryptotypes.PubKey, error) {
+	var (
+		pk cryptotypes.PubKey = &secp256k1.PubKey{} // use default public key type
+	)
+
+	// Use the first element from the list of keys in order to generate a valid
+	// pubkey that supports multiple algorithms.
+	if f.simulateAndExecute && f.keybase != nil {
+		records, _ := f.keybase.List()
+		if len(records) == 0 {
+			return nil, errors.New("cannot build signature for simulation, key records slice is empty")
+		}
+
+		// take the first record just for simulation purposes
+		pk = records[0].GetPubKey()
+		if pk == nil {
+			return nil, errors.New("cannot build signature for simulation, failed to convert proto Any to public key")
+		}
+	}
+
+	return pk, nil
+}
+
 // Prepare ensures the account defined by ctx.GetFromAddress() exists and
 // if the account number and/or the account sequence number are zero (not set),
 // they will be queried for and set on the provided Factory. A new Factory with
