@@ -3,9 +3,11 @@ package config_test
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
+
+	"github.com/cosmos/cosmos-sdk/simapp"
 
 	"github.com/stretchr/testify/require"
 
@@ -25,9 +27,12 @@ const (
 // initClientContext initiates client Context for tests
 func initClientContext(t *testing.T, envVar string) (client.Context, func()) {
 	home := t.TempDir()
+	appCodec := simapp.MakeTestEncodingConfig().Marshaler
+
 	clientCtx := client.Context{}.
 		WithHomeDir(home).
-		WithViper("")
+		WithViper("").
+		WithCodec(appCodec)
 
 	clientCtx.Viper.BindEnv(nodeEnv)
 	if envVar != "" {
@@ -58,7 +63,7 @@ func TestConfigCmd(t *testing.T) {
 	cmd.SetOut(b)
 	cmd.SetArgs([]string{"node"})
 	cmd.Execute()
-	out, err := ioutil.ReadAll(b)
+	out, err := io.ReadAll(b)
 	require.NoError(t, err)
 	require.Equal(t, string(out), testNode1+"\n")
 }
@@ -76,6 +81,12 @@ func TestConfigCmdEnvFlag(t *testing.T) {
 	}{
 		{"env var is set with no flag", testNode1, []string{"validators"}, testNode1},
 		{"env var is set with a flag", testNode1, []string{"validators", fmt.Sprintf("--%s=%s", flags.FlagNode, testNode2)}, testNode2},
+		/*
+			The next line will set no node, due to the lack of a passed flag or ENV, relying on the default node,
+			thus if you are running a local dev-node on localhost, when the line is executed,
+			there will be no error (it will be nil), since the POST call will succeed, therefore the test will fail,
+			since it require.Error for all test-cases described here.
+		*/
 		{"env var is not set with no flag", "", []string{"validators"}, defaultNode},
 		{"env var is not set with a flag", "", []string{"validators", fmt.Sprintf("--%s=%s", flags.FlagNode, testNode2)}, testNode2},
 	}
