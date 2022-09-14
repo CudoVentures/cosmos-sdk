@@ -19,6 +19,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/input"
 	"github.com/cosmos/cosmos-sdk/codec/legacy"
+	codecTypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/ledger"
@@ -89,6 +90,28 @@ type Keyring interface {
 
 	Importer
 	Exporter
+}
+
+type isRecord_Item interface {
+	isRecord_Item()
+	MarshalTo([]byte) (int, error)
+	Size() int
+}
+
+// Record is used for representing a key in the keyring.
+type Record struct {
+	// name represents a name of Record
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// pub_key represents a public key in any format
+	PubKey *codecTypes.Any `protobuf:"bytes,2,opt,name=pub_key,json=pubKey,proto3" json:"pub_key,omitempty"`
+	// Record contains one of the following items
+	//
+	// Types that are valid to be assigned to Item:
+	//	*Record_Local_
+	//	*Record_Ledger_
+	//	*Record_Multi_
+	//	*Record_Offline_
+	Item isRecord_Item `protobuf_oneof:"item"`
 }
 
 // UnsafeKeyring exposes unsafe operations such as unsafe unarmored export in
