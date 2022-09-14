@@ -82,3 +82,11 @@ Ignite CLI is the all-in-one platform to build, launch, and maintain any crypto 
 ## Disambiguation
 
 This Cosmos SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. As per our agreement, this disambiguation notice will stay here.
+
+## Changes in Cudos fork
+Here are the changes we've made in Cudos fork of the original cosmos-sdk repo.
+
+### Fixed --dry-run flag
+There was a bug with the --dry-run flag that wasn't fixed yet in the version from which we forked. It was fixed in later versions so we basically copied the change. There were also some changes in the tests to incorporate the new fix.
+
+To see changes, compare with branch: cudos-v0.45.3-base-for-compare 
