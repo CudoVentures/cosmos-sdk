@@ -525,7 +525,7 @@ func (s *IntegrationTestSuite) TestNewExecGenericAuthorized() {
 			"fail invalid grantee",
 			[]string{
 				execMsg.Name(),
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, "grantee"),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, "grantee_invalid"),
 				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 				fmt.Sprintf("--%s=true", flags.FlagGenerateOnly),
 			},
