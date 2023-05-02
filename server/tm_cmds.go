@@ -4,7 +4,9 @@ package server
 
 import (
 	"fmt"
+	_ "unsafe"
 
+	tmlog "github.com/cometbft/cometbft/libs/log"
 	"github.com/cometbft/cometbft/p2p"
 	pvm "github.com/cometbft/cometbft/privval"
 	tversion "github.com/cometbft/cometbft/version"
@@ -31,6 +33,24 @@ func ShowNodeIDCmd() *cobra.Command {
 			}
 
 			fmt.Println(nodeKey.ID())
+			return nil
+		},
+	}
+}
+
+//go:linkname resetAll github.com/cometbft/cometbft/cmd/cometbft/commands.resetAll
+func resetAll(dbDir, addrBookFile, privValKeyFile, privValStateFile string, logger tmlog.Logger) error
+
+// UnsafeResetAllCmd - extension of the tendermint command, resets initialization
+func UnsafeResetAllCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "unsafe-reset-all",
+		Short: "Resets the blockchain database, removes address book files, and resets data/priv_validator_state.json to the genesis state",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			serverCtx := GetServerContextFromCmd(cmd)
+			cfg := serverCtx.Config
+
+			resetAll(cfg.DBDir(), cfg.P2P.AddrBookFile(), cfg.PrivValidatorKeyFile(), cfg.PrivValidatorStateFile(), serverCtx.Logger)
 			return nil
 		},
 	}
