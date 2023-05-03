@@ -45,6 +45,7 @@ func (s *KeeperTestSuite) TestMsgVerifyInvariant() {
 	s.Require().NoError(err)
 
 	sender := sdk.AccAddress([]byte("addr1_______________"))
+	noAminTokenAddress := sdk.AccAddress([]byte("noadmintokensaddress"))
 
 	s.authKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(2)
 	s.keeper.RegisterRoute("bank", "total-supply", func(sdk.Context) (string, bool) { return "", false })
@@ -93,6 +94,15 @@ func (s *KeeperTestSuite) TestMsgVerifyInvariant() {
 				InvariantRoute:      "total-supply",
 			},
 			expErr: false,
+		},
+		{
+			name: "no admin tokens should fail",
+			input: &types.MsgVerifyInvariant{
+				Sender:              noAminTokenAddress.String(),
+				InvariantModuleName: "bank",
+				InvariantRoute:      "total-supply",
+			},
+			expErr: true,
 		},
 	}
 

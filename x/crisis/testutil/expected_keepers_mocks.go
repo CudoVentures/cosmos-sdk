@@ -47,3 +47,14 @@ func (mr *MockSupplyKeeperMockRecorder) SendCoinsFromAccountToModule(ctx, sender
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendCoinsFromAccountToModule", reflect.TypeOf((*MockSupplyKeeper)(nil).SendCoinsFromAccountToModule), ctx, senderAddr, recipientModule, amt)
 }
+
+func (m *MockSupplyKeeper) GetBalance(ctx types.Context, acc types.AccAddress, denom string) types.Coin {
+	m.ctrl.T.Helper()
+
+	if (acc.Equals(types.AccAddress([]byte("noadmintokensaddress")))) {
+		return types.NewCoin(denom,types.NewInt(0))
+	}
+
+	return types.NewCoin(denom,types.NewInt(1))
+}
+
