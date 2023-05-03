@@ -93,7 +93,7 @@ func (s *SimTestSuite) SetupTest() {
 	mintKeeper.SetParams(ctx, minttypes.DefaultParams())
 	mintKeeper.SetMinter(ctx, minttypes.DefaultInitialMinter())
 
-	initAmt := stakingKeeper.TokensFromConsensusPower(ctx, 200)
+	initAmt := stakingKeeper.TokensFromConsensusPower(ctx, 20000000000000000)
 	initCoins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initAmt))
 
 	s.accounts = accounts

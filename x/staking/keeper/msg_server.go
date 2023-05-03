@@ -105,6 +105,12 @@ func (k msgServer) CreateValidator(goCtx context.Context, msg *types.MsgCreateVa
 		return nil, err
 	}
 
+	msd, _ := sdk.NewIntFromString(types.MinSelfDelegation)
+
+	if msg.MinSelfDelegation.LT(msd) {
+		return nil, types.ErrMinSelfDelegationTooLow
+	}
+
 	validator.MinSelfDelegation = msg.MinSelfDelegation
 
 	k.SetValidator(ctx, validator)

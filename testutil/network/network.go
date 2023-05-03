@@ -84,34 +84,36 @@ type Config struct {
 	LegacyAmino       *codec.LegacyAmino // TODO: Remove!
 	InterfaceRegistry codectypes.InterfaceRegistry
 
-	TxConfig         client.TxConfig
-	AccountRetriever client.AccountRetriever
-	AppConstructor   AppConstructor             // the ABCI application constructor
-	GenesisState     map[string]json.RawMessage // custom genesis state to provide
-	TimeoutCommit    time.Duration              // the consensus commitment timeout
-	ChainID          string                     // the network chain-id
-	NumValidators    int                        // the total number of validators to create and bond
-	Mnemonics        []string                   // custom user-provided validator operator mnemonics
-	BondDenom        string                     // the staking bond denomination
-	MinGasPrices     string                     // the minimum gas prices each validator will accept
-	AccountTokens    math.Int                   // the amount of unique validator tokens (e.g. 1000node0)
-	StakingTokens    math.Int                   // the amount of tokens each validator has available to stake
-	BondedTokens     math.Int                   // the amount of tokens each validator stakes
-	PruningStrategy  string                     // the pruning strategy each validator will have
-	EnableTMLogging  bool                       // enable Tendermint logging to STDOUT
-	CleanupDir       bool                       // remove base temporary directory during cleanup
-	SigningAlgo      string                     // signing algorithm for keys
-	KeyringOptions   []keyring.Option           // keyring configuration options
-	RPCAddress       string                     // RPC listen address (including port)
-	APIAddress       string                     // REST API listen address (including port)
-	GRPCAddress      string                     // GRPC server listen address (including port)
-	PrintMnemonic    bool                       // print the mnemonic of first validator as log output for testing
+	TxConfig          client.TxConfig
+	AccountRetriever  client.AccountRetriever
+	AppConstructor    AppConstructor             // the ABCI application constructor
+	GenesisState      map[string]json.RawMessage // custom genesis state to provide
+	TimeoutCommit     time.Duration              // the consensus commitment timeout
+	ChainID           string                     // the network chain-id
+	NumValidators     int                        // the total number of validators to create and bond
+	Mnemonics         []string                   // custom user-provided validator operator mnemonics
+	BondDenom         string                     // the staking bond denomination
+	MinGasPrices      string                     // the minimum gas prices each validator will accept
+	AccountTokens     math.Int                   // the amount of unique validator tokens (e.g. 1000node0)
+	StakingTokens     math.Int                   // the amount of tokens each validator has available to stake
+	BondedTokens      math.Int                   // the amount of tokens each validator stakes
+	PruningStrategy   string                     // the pruning strategy each validator will have
+	EnableTMLogging   bool                       // enable Tendermint logging to STDOUT
+	CleanupDir        bool                       // remove base temporary directory during cleanup
+	SigningAlgo       string                     // signing algorithm for keys
+	KeyringOptions    []keyring.Option           // keyring configuration options
+	RPCAddress        string                     // RPC listen address (including port)
+	APIAddress        string                     // REST API listen address (including port)
+	GRPCAddress       string                     // GRPC server listen address (including port)
+	PrintMnemonic     bool                       // print the mnemonic of first validator as log output for testing
+	MinSelfDelegation math.Int                   // min self delegation for create validator msg
 }
 
 // DefaultConfig returns a sane default configuration suitable for nearly all
 // testing requirements.
 func DefaultConfig(factory TestFixtureFactory) Config {
 	fixture := factory()
+	msd, _ := math.NewIntFromString("2000000000000000000000000")
 
 	return Config{
 		Codec:             fixture.EncodingConfig.Codec,
@@ -126,14 +128,15 @@ func DefaultConfig(factory TestFixtureFactory) Config {
 		NumValidators:     4,
 		BondDenom:         sdk.DefaultBondDenom,
 		MinGasPrices:      fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom),
-		AccountTokens:     sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction),
-		StakingTokens:     sdk.TokensFromConsensusPower(500, sdk.DefaultPowerReduction),
-		BondedTokens:      sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction),
+		AccountTokens:     sdk.TokensFromConsensusPower(1000000000000000000, sdk.DefaultPowerReduction),
+		StakingTokens:     sdk.TokensFromConsensusPower(500000000000000000, sdk.DefaultPowerReduction),
+		BondedTokens:      sdk.TokensFromConsensusPower(200000000000000000, sdk.DefaultPowerReduction),
 		PruningStrategy:   pruningtypes.PruningOptionNothing,
 		CleanupDir:        true,
 		SigningAlgo:       string(hd.Secp256k1Type),
 		KeyringOptions:    []keyring.Option{},
 		PrintMnemonic:     false,
+		MinSelfDelegation: msd,
 	}
 }
 
@@ -496,7 +499,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			sdk.NewCoin(cfg.BondDenom, cfg.BondedTokens),
 			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
 			stakingtypes.NewCommissionRates(commission, math.LegacyOneDec(), math.LegacyOneDec()),
-			math.OneInt(),
+			cfg.MinSelfDelegation,
 		)
 		if err != nil {
 			return nil, err

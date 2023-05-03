@@ -83,7 +83,7 @@ func (s *KeeperTestSuite) TestUnJailNotBonded() {
 	p.MaxValidators = 5
 	s.stakingKeeper.SetParams(ctx, p)
 
-	addrDels := simtestutil.AddTestAddrsIncremental(s.bankKeeper, s.stakingKeeper, ctx, 6, s.stakingKeeper.TokensFromConsensusPower(ctx, 200))
+	addrDels := simtestutil.AddTestAddrsIncremental(s.bankKeeper, s.stakingKeeper, ctx, 6, s.stakingKeeper.TokensFromConsensusPower(ctx, 2000000000))
 	valAddrs := simtestutil.ConvertAddrsToValAddrs(addrDels)
 	pks := simtestutil.CreateTestPubKeys(6)
 	tstaking := stakingtestutil.NewHelper(s.T(), ctx, s.stakingKeeper)
@@ -91,7 +91,7 @@ func (s *KeeperTestSuite) TestUnJailNotBonded() {
 	// create max (5) validators all with the same power
 	for i := uint32(0); i < p.MaxValidators; i++ {
 		addr, val := valAddrs[i], pks[i]
-		tstaking.CreateValidatorWithValPower(addr, val, 100, true)
+		tstaking.CreateValidatorWithValPower(addr, val, 100000000, true)
 	}
 
 	staking.EndBlocker(ctx, s.stakingKeeper)
@@ -99,7 +99,7 @@ func (s *KeeperTestSuite) TestUnJailNotBonded() {
 
 	// create a 6th validator with less power than the cliff validator (won't be bonded)
 	addr, val := valAddrs[5], pks[5]
-	amt := s.stakingKeeper.TokensFromConsensusPower(ctx, 50)
+	amt := s.stakingKeeper.TokensFromConsensusPower(ctx, 50000000)
 	msg := tstaking.CreateValidatorMsg(addr, val, amt)
 	msg.MinSelfDelegation = amt
 	msg.Description = stakingtypes.Description{Moniker: "a"}

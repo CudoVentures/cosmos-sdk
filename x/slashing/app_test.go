@@ -32,8 +32,8 @@ var (
 )
 
 func TestSlashingMsgs(t *testing.T) {
-	genTokens := sdk.TokensFromConsensusPower(42, sdk.DefaultPowerReduction)
-	bondTokens := sdk.TokensFromConsensusPower(10, sdk.DefaultPowerReduction)
+	genTokens := sdk.TokensFromConsensusPower(42000000000000, sdk.DefaultPowerReduction)
+	bondTokens := sdk.TokensFromConsensusPower(10000000000000, sdk.DefaultPowerReduction)
 	genCoin := sdk.NewCoin(sdk.DefaultBondDenom, genTokens)
 	bondCoin := sdk.NewCoin(sdk.DefaultBondDenom, bondTokens)
 
@@ -71,8 +71,9 @@ func TestSlashingMsgs(t *testing.T) {
 	description := stakingtypes.NewDescription("foo_moniker", "", "", "", "")
 	commission := stakingtypes.NewCommissionRates(math.LegacyZeroDec(), math.LegacyZeroDec(), math.LegacyZeroDec())
 
+	msd, _ := math.NewIntFromString("2000000000000000000000000")
 	createValidatorMsg, err := stakingtypes.NewMsgCreateValidator(
-		sdk.ValAddress(addr1), valKey.PubKey(), bondCoin, description, commission, math.OneInt(),
+		sdk.ValAddress(addr1), valKey.PubKey(), bondCoin, description, commission, msd,
 	)
 	require.NoError(t, err)
 

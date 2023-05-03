@@ -1,11 +1,10 @@
 package keeper_test
 
 import (
-	"testing"
-
 	"cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
+	"testing"
 
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -105,13 +104,14 @@ func TestCalculateRewardsAfterSlash(t *testing.T) {
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
-	addr := simtestutil.AddTestAddrs(bankKeeper, stakingKeeper, ctx, 2, sdk.NewInt(100000000))
+	amt, _ := math.NewIntFromString("20000000000000000000000000000000")
+	addr := simtestutil.AddTestAddrs(bankKeeper, stakingKeeper, ctx, 2, amt)
 	valAddrs := simtestutil.ConvertAddrsToValAddrs(addr)
 	tstaking := stakingtestutil.NewHelper(t, ctx, stakingKeeper)
 
 	// create validator with 50% commission
 	tstaking.Commission = stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(5, 1), sdk.NewDecWithPrec(5, 1), math.LegacyNewDec(0))
-	valPower := int64(100)
+	valPower := int64(10000000)
 	tstaking.CreateValidatorWithValPower(valAddrs[0], valConsPk0, valPower, true)
 
 	// end block to bond validator
@@ -181,11 +181,13 @@ func TestCalculateRewardsAfterManySlashes(t *testing.T) {
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	tstaking := stakingtestutil.NewHelper(t, ctx, stakingKeeper)
-	addr := simtestutil.AddTestAddrs(bankKeeper, stakingKeeper, ctx, 2, sdk.NewInt(100000000))
+
+	amt, _ := math.NewIntFromString("2000000000000000000000000000")
+	addr := simtestutil.AddTestAddrs(bankKeeper, stakingKeeper, ctx, 2, amt)
 	valAddrs := simtestutil.ConvertAddrsToValAddrs(addr)
 
 	// create validator with 50% commission
-	valPower := int64(100)
+	valPower := int64(100000000)
 	tstaking.Commission = stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(5, 1), sdk.NewDecWithPrec(5, 1), math.LegacyNewDec(0))
 	tstaking.CreateValidatorWithValPower(valAddrs[0], valConsPk0, valPower, true)
 
@@ -346,9 +348,9 @@ func TestWithdrawDelegationRewardsBasic(t *testing.T) {
 
 	distrKeeper.DeleteAllValidatorHistoricalRewards(ctx)
 
-	balancePower := int64(1000)
+	balancePower := int64(1000000000)
 	balanceTokens := stakingKeeper.TokensFromConsensusPower(ctx, balancePower)
-	addr := simtestutil.AddTestAddrs(bankKeeper, stakingKeeper, ctx, 1, sdk.NewInt(1000000000))
+	addr := simtestutil.AddTestAddrs(bankKeeper, stakingKeeper, ctx, 1, balanceTokens)
 	valAddrs := simtestutil.ConvertAddrsToValAddrs(addr)
 	tstaking := stakingtestutil.NewHelper(t, ctx, stakingKeeper)
 
@@ -358,7 +360,7 @@ func TestWithdrawDelegationRewardsBasic(t *testing.T) {
 	accountKeeper.SetModuleAccount(ctx, distrAcc)
 
 	// create validator with 50% commission
-	power := int64(100)
+	power := int64(10000000)
 	tstaking.Commission = stakingtypes.NewCommissionRates(sdk.NewDecWithPrec(5, 1), sdk.NewDecWithPrec(5, 1), math.LegacyNewDec(0))
 	valTokens := tstaking.CreateValidatorWithValPower(valAddrs[0], valConsPk0, power, true)
 
@@ -429,7 +431,8 @@ func TestCalculateRewardsAfterManySlashesInSameBlock(t *testing.T) {
 
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
-	addr := simtestutil.AddTestAddrs(bankKeeper, stakingKeeper, ctx, 1, sdk.NewInt(1000000000))
+	balance, _ := math.NewIntFromString("200000000000000000000000")
+	addr := simtestutil.AddTestAddrs(bankKeeper, stakingKeeper, ctx, 1, balance)
 	valAddrs := simtestutil.ConvertAddrsToValAddrs(addr)
 	tstaking := stakingtestutil.NewHelper(t, ctx, stakingKeeper)
 
@@ -510,7 +513,8 @@ func TestCalculateRewardsMultiDelegatorMultiSlash(t *testing.T) {
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
 
 	tstaking := stakingtestutil.NewHelper(t, ctx, stakingKeeper)
-	addr := simtestutil.AddTestAddrs(bankKeeper, stakingKeeper, ctx, 2, sdk.NewInt(1000000000))
+	balance, _ := math.NewIntFromString("2000000000000000000000000")
+	addr := simtestutil.AddTestAddrs(bankKeeper, stakingKeeper, ctx, 2, balance)
 	valAddrs := simtestutil.ConvertAddrsToValAddrs(addr)
 
 	// create validator with 50% commission

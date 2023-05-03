@@ -43,7 +43,7 @@ var (
 	}
 
 	// The default power validators are initialized to have within tests
-	initAmt   = sdk.TokensFromConsensusPower(200, sdk.DefaultPowerReduction)
+	initAmt   = sdk.TokensFromConsensusPower(200000000000, sdk.DefaultPowerReduction)
 	initCoins = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, initAmt))
 )
 
@@ -91,7 +91,7 @@ func TestHandleDoubleSign(t *testing.T) {
 	ctx := f.ctx.WithIsCheckTx(false).WithBlockHeight(1)
 	populateValidators(t, f)
 
-	power := int64(100)
+	power := int64(10000000)
 	stakingParams := f.stakingKeeper.GetParams(ctx)
 	operatorAddr, val := valAddresses[0], pubkeys[0]
 	tstaking := stakingtestutil.NewHelper(t, ctx, f.stakingKeeper)
@@ -107,7 +107,7 @@ func TestHandleDoubleSign(t *testing.T) {
 	assert.DeepEqual(t, selfDelegation, f.stakingKeeper.Validator(ctx, operatorAddr).GetBondedTokens())
 
 	// handle a signature to set signing info
-	f.slashingKeeper.HandleValidatorSignature(ctx, val.Address(), selfDelegation.Int64(), true)
+	f.slashingKeeper.HandleValidatorSignature(ctx, val.Address(), power, true)
 
 	// double sign less than max age
 	oldTokens := f.stakingKeeper.Validator(ctx, operatorAddr).GetTokens()
