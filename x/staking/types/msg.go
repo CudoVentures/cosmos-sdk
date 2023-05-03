@@ -120,6 +120,10 @@ func (msg MsgCreateValidator) ValidateBasic() error {
 		return err
 	}
 
+	if msg.Description.Moniker == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty moniker")
+	}
+
 	if !msg.MinSelfDelegation.IsPositive() {
 		return sdkerrors.Wrap(
 			sdkerrors.ErrInvalidRequest,
@@ -185,6 +189,10 @@ func (msg MsgEditValidator) ValidateBasic() error {
 			sdkerrors.ErrInvalidRequest,
 			"minimum self delegation must be a positive integer",
 		)
+	}
+
+	if msg.Description.Moniker == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty moniker")
 	}
 
 	if msg.CommissionRate != nil {

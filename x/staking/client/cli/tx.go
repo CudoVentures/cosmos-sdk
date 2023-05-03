@@ -8,6 +8,7 @@ import (
 
 	"cosmossdk.io/math"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 
@@ -108,6 +109,11 @@ func NewEditValidatorCmd() *cobra.Command {
 			}
 			valAddr := clientCtx.GetFromAddress()
 			moniker, _ := cmd.Flags().GetString(FlagEditMoniker)
+
+			if moniker == "" {
+				return errors.New("moniker cannot be empty")
+			}
+
 			identity, _ := cmd.Flags().GetString(FlagIdentity)
 			website, _ := cmd.Flags().GetString(FlagWebsite)
 			security, _ := cmd.Flags().GetString(FlagSecurityContact)
@@ -359,6 +365,11 @@ func newBuildCreateValidatorMsg(clientCtx client.Context, txf tx.Factory, fs *fl
 	}
 
 	moniker, _ := fs.GetString(FlagMoniker)
+
+	if moniker == "" {
+		return txf, nil, errors.New("moniker cannot be empty")
+	}
+
 	identity, _ := fs.GetString(FlagIdentity)
 	website, _ := fs.GetString(FlagWebsite)
 	security, _ := fs.GetString(FlagSecurityContact)
@@ -420,7 +431,7 @@ func CreateValidatorMsgFlagSet(ipDefault string) (fs *flag.FlagSet, defaultsDesc
 	fsCreateValidator.String(FlagIP, ipDefault, "The node's public P2P IP")
 	fsCreateValidator.Uint(FlagP2PPort, 26656, "The node's public P2P port")
 	fsCreateValidator.String(FlagNodeID, "", "The node's NodeID")
-	fsCreateValidator.String(FlagMoniker, "", "The validator's (optional) moniker")
+	fsCreateValidator.String(FlagMoniker, "", "The validator's moniker")
 	fsCreateValidator.String(FlagWebsite, "", "The validator's (optional) website")
 	fsCreateValidator.String(FlagSecurityContact, "", "The validator's (optional) security contact email")
 	fsCreateValidator.String(FlagDetails, "", "The validator's (optional) details")

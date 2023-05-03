@@ -211,6 +211,7 @@ func (d Description) String() string {
 // UpdateDescription updates the fields of a given description. An error is
 // returned if the resulting description contains an invalid length.
 func (d Description) UpdateDescription(d2 Description) (Description, error) {
+
 	if d2.Moniker == DoNotModifyDesc {
 		d2.Moniker = d.Moniker
 	}
@@ -242,6 +243,11 @@ func (d Description) UpdateDescription(d2 Description) (Description, error) {
 
 // EnsureLength ensures the length of a validator's description.
 func (d Description) EnsureLength() (Description, error) {
+
+	if len(d.Moniker) == 0 {
+		return d, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "empty moniker")
+	}
+
 	if len(d.Moniker) > MaxMonikerLength {
 		return d, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid moniker length; got: %d, max: %d", len(d.Moniker), MaxMonikerLength)
 	}

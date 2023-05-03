@@ -71,11 +71,12 @@ func TestMsgCreateValidator(t *testing.T) {
 		expectPass                                                 bool
 	}{
 		{"basic good", "a", "b", "c", "d", "e", commission1, math.OneInt(), valAddr1, pk1, coinPos, true},
-		{"partial description", "", "", "c", "", "", commission1, math.OneInt(), valAddr1, pk1, coinPos, true},
+		{"partial description", "a", "", "c", "", "", commission1, math.OneInt(), valAddr1, pk1, coinPos, true},
 		{"empty description", "", "", "", "", "", commission2, math.OneInt(), valAddr1, pk1, coinPos, false},
 		{"empty address", "a", "b", "c", "d", "e", commission2, math.OneInt(), emptyAddr, pk1, coinPos, false},
 		{"empty pubkey", "a", "b", "c", "d", "e", commission1, math.OneInt(), valAddr1, emptyPubkey, coinPos, false},
 		{"empty bond", "a", "b", "c", "d", "e", commission2, math.OneInt(), valAddr1, pk1, coinZero, false},
+		{"empty moniker", "", "", "", "c", "", commission2, math.OneInt(), valAddr1, pk1, coinPos, false},
 		{"nil bond", "a", "b", "c", "d", "e", commission2, math.OneInt(), valAddr1, pk1, sdk.Coin{}, false},
 		{"zero min self delegation", "a", "b", "c", "d", "e", commission1, math.ZeroInt(), valAddr1, pk1, coinPos, false},
 		{"negative min self delegation", "a", "b", "c", "d", "e", commission1, sdk.NewInt(-1), valAddr1, pk1, coinPos, false},
@@ -103,8 +104,9 @@ func TestMsgEditValidator(t *testing.T) {
 		minSelfDelegation                                          math.Int
 	}{
 		{"basic good", "a", "b", "c", "d", "e", valAddr1, true, math.OneInt()},
-		{"partial description", "", "", "c", "", "", valAddr1, true, math.OneInt()},
+		{"partial description", "a", "", "c", "", "", valAddr1, true, math.OneInt()},
 		{"empty description", "", "", "", "", "", valAddr1, false, math.OneInt()},
+		{"empty moniker", "", "", "", "c", "", valAddr1, false, math.OneInt()},
 		{"empty address", "a", "b", "c", "d", "e", emptyAddr, false, math.OneInt()},
 		{"nil int", "a", "b", "c", "d", "e", emptyAddr, false, math.Int{}},
 	}
