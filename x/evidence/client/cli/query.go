@@ -33,6 +33,7 @@ $ %s query %s --page=2 --limit=50
 		Args:                       cobra.MaximumNArgs(1),
 		SuggestionsMinimumDistance: 2,
 		RunE:                       QueryEvidenceCmd(),
+		DisableFlagParsing:         false,
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
