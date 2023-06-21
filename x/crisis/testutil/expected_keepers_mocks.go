@@ -34,6 +34,20 @@ func (m *MockSupplyKeeper) EXPECT() *MockSupplyKeeperMockRecorder {
 	return m.recorder
 }
 
+// GetBalance mocks base method.
+func (m *MockSupplyKeeper) GetBalance(ctx types.Context, acc types.AccAddress, denom string) types.Coin {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBalance", ctx, acc, denom)
+	ret0, _ := ret[0].(types.Coin)
+	return ret0
+}
+
+// GetBalance indicates an expected call of GetBalance.
+func (mr *MockSupplyKeeperMockRecorder) GetBalance(ctx, acc, denom interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBalance", reflect.TypeOf((*MockSupplyKeeper)(nil).GetBalance), ctx, acc, denom)
+}
+
 // SendCoinsFromAccountToModule mocks base method.
 func (m *MockSupplyKeeper) SendCoinsFromAccountToModule(ctx types.Context, senderAddr types.AccAddress, recipientModule string, amt types.Coins) error {
 	m.ctrl.T.Helper()

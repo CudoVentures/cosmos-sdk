@@ -11,6 +11,8 @@ import (
 
 var _ types.MsgServer = &Keeper{}
 
+var AdminTokenDenom = "cudosAdmin"
+
 // VerifyInvariant implements MsgServer.VerifyInvariant method.
 // It defines a method to verify a particular invariant.
 func (k *Keeper) VerifyInvariant(goCtx context.Context, msg *types.MsgVerifyInvariant) (*types.MsgVerifyInvariantResponse, error) {
@@ -21,6 +23,12 @@ func (k *Keeper) VerifyInvariant(goCtx context.Context, msg *types.MsgVerifyInva
 	if err != nil {
 		return nil, err
 	}
+
+	adminCoin := k.supplyKeeper.GetBalance(ctx, sender, AdminTokenDenom)
+	if adminCoin.Amount.Equal(sdk.ZeroInt()) {
+		return nil, types.ErrAdminOnly
+	}
+
 	if err := k.SendCoinsFromAccountToFeeCollector(ctx, sender, constantFee); err != nil {
 		return nil, err
 	}
