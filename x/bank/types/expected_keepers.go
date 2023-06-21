@@ -3,6 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 )
 
 // AccountKeeper defines the account contract that must be fulfilled when
@@ -26,4 +27,10 @@ type AccountKeeper interface {
 	GetModuleAccount(ctx sdk.Context, moduleName string) types.ModuleAccountI
 	SetModuleAccount(ctx sdk.Context, macc types.ModuleAccountI)
 	GetModulePermissions() map[string]types.PermissionsForAddress
+}
+
+type DistributionKeeper interface {
+	GetDistributionAccount(ctx sdk.Context) types.ModuleAccountI
+	GetFeePool(ctx sdk.Context) (feePool distrtypes.FeePool)
+	SetFeePool(ctx sdk.Context, feePool distrtypes.FeePool)
 }

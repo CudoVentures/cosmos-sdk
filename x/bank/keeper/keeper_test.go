@@ -24,6 +24,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 )
@@ -31,6 +32,7 @@ import (
 const (
 	fooDenom     = "foo"
 	barDenom     = "bar"
+	acudosDenom  = "acudos"
 	initialPower = int64(100)
 	holder       = "holder"
 	multiPerm    = "multiple permissions account"
@@ -43,6 +45,7 @@ var (
 	minterAcc    = authtypes.NewEmptyModuleAccount(authtypes.Minter, authtypes.Minter)
 	mintAcc      = authtypes.NewEmptyModuleAccount(minttypes.ModuleName, authtypes.Minter)
 	multiPermAcc = authtypes.NewEmptyModuleAccount(multiPerm, authtypes.Burner, authtypes.Minter, authtypes.Staking)
+	distrAcc     = authtypes.NewEmptyModuleAccount(distrtypes.ModuleName)
 
 	baseAcc = authtypes.NewBaseAccountWithAddress(sdk.AccAddress([]byte("baseAcc")))
 
@@ -70,9 +73,10 @@ func newBarCoin(amt int64) sdk.Coin {
 type KeeperTestSuite struct {
 	suite.Suite
 
-	ctx        sdk.Context
-	bankKeeper keeper.BaseKeeper
-	authKeeper *banktestutil.MockAccountKeeper
+	ctx         sdk.Context
+	bankKeeper  keeper.BaseKeeper
+	authKeeper  *banktestutil.MockAccountKeeper
+	distrKeeper *banktestutil.MockDistributionKeeper
 
 	queryClient banktypes.QueryClient
 	msgServer   banktypes.MsgServer
@@ -93,9 +97,11 @@ func (suite *KeeperTestSuite) SetupTest() {
 	// gomock initializations
 	ctrl := gomock.NewController(suite.T())
 	authKeeper := banktestutil.NewMockAccountKeeper(ctrl)
+	distrKeeper := banktestutil.NewMockDistributionKeeper(ctrl)
 
 	suite.ctx = ctx
 	suite.authKeeper = authKeeper
+	suite.distrKeeper = distrKeeper
 	suite.bankKeeper = keeper.NewBaseKeeper(
 		encCfg.Codec,
 		key,
@@ -103,6 +109,7 @@ func (suite *KeeperTestSuite) SetupTest() {
 		map[string]bool{accAddrs[4].String(): true},
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
+	suite.bankKeeper.SetDistrKeeper(distrKeeper)
 
 	banktypes.RegisterInterfaces(encCfg.InterfaceRegistry)
 
@@ -370,7 +377,7 @@ func (suite *KeeperTestSuite) TestSupply_MintCoins() {
 func (suite *KeeperTestSuite) TestSupply_BurnCoins() {
 	ctx := suite.ctx
 	require := suite.Require()
-	authKeeper, keeper := suite.authKeeper, suite.bankKeeper
+	authKeeper, distrKeeper, keeper := suite.authKeeper, suite.distrKeeper, suite.bankKeeper
 
 	// set burnerAcc balance
 	suite.mockMintCoins(minterAcc)
@@ -398,8 +405,15 @@ func (suite *KeeperTestSuite) TestSupply_BurnCoins() {
 	suite.mockBurnCoins(burnerAcc)
 	require.Error(keeper.BurnCoins(ctx, authtypes.Burner, supplyAfterInflation), "insufficient coins")
 
+	distrKeeper.EXPECT().GetDistributionAccount(ctx).Return(distrAcc)
+	dbBefore := keeper.GetBalance(ctx, distrKeeper.GetDistributionAccount(ctx).GetAddress(), acudosDenom)
+
 	suite.mockBurnCoins(burnerAcc)
 	require.NoError(keeper.BurnCoins(ctx, authtypes.Burner, initCoins))
+
+	distrKeeper.EXPECT().GetDistributionAccount(ctx).Return(distrAcc)
+	dbAfter := keeper.GetBalance(ctx, distrKeeper.GetDistributionAccount(ctx).GetAddress(), acudosDenom)
+	suite.Require().Equal(dbBefore, dbAfter, "destribution module balance shouldn't change when burning non acudos")
 
 	supplyAfterBurn, _, err := keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
 	require.NoError(err)
@@ -423,6 +437,64 @@ func (suite *KeeperTestSuite) TestSupply_BurnCoins() {
 	require.NoError(err)
 	require.Equal(sdk.NewCoins(), keeper.GetAllBalances(ctx, multiPermAcc.GetAddress()))
 	require.Equal(supplyAfterInflation.Sub(initCoins...), supplyAfterBurn)
+}
+
+func (suite *KeeperTestSuite) TestSupply_BurnCoinsToCommunityPool() {
+	ctx := suite.ctx
+	require := suite.Require()
+	distrKeeper, keeper := suite.distrKeeper, suite.bankKeeper
+
+	totalSupplyAcudos := sdk.NewCoins(sdk.NewCoin(acudosDenom, initTokens))
+
+	// set burnerAcc balance
+	suite.mockMintCoins(minterAcc)
+	require.NoError(keeper.MintCoins(ctx, authtypes.Minter, totalSupplyAcudos))
+
+	suite.mockSendCoinsFromModuleToAccount(minterAcc, burnerAcc.GetAddress())
+	require.NoError(keeper.SendCoinsFromModuleToAccount(ctx, authtypes.Minter, burnerAcc.GetAddress(), totalSupplyAcudos))
+
+	supplyBeforeBurn, _, err := keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
+	require.NoError(err)
+
+	distrKeeper.EXPECT().GetDistributionAccount(ctx).Return(distrAcc)
+	dbBefore := keeper.GetBalance(ctx, distrKeeper.GetDistributionAccount(ctx).GetAddress(), acudosDenom)
+
+	distrKeeper.EXPECT().GetDistributionAccount(ctx).Return(distrAcc)
+	distrKeeper.EXPECT().GetFeePool(ctx).Return(distrtypes.FeePool{
+		CommunityPool: sdk.DecCoins{},
+	})
+	distrKeeper.EXPECT().SetFeePool(ctx, distrtypes.FeePool{
+		CommunityPool: sdk.NewDecCoinsFromCoins(sdk.NewCoin(acudosDenom, initTokens)),
+	})
+	suite.mockBurnCoins(burnerAcc)
+	require.NoError(keeper.BurnCoins(ctx, authtypes.Burner, totalSupplyAcudos))
+
+	supplyAfterBurn, _, err := keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
+	require.NoError(err)
+	require.Equal(sdk.NewCoins(), keeper.GetAllBalances(ctx, burnerAcc.GetAddress()))
+	require.Equal(supplyBeforeBurn, supplyAfterBurn)
+
+	distrKeeper.EXPECT().GetDistributionAccount(ctx).Return(distrAcc)
+	dbAfter := keeper.GetBalance(ctx, distrKeeper.GetDistributionAccount(ctx).GetAddress(), acudosDenom)
+	suite.Require().Equal(dbBefore.Add(totalSupplyAcudos[0]), dbAfter, "distribution module balance not increased correctly")
+
+	// Test that everything other than acudos is still being burned
+	suite.mockMintCoins(minterAcc)
+	require.NoError(keeper.MintCoins(ctx, authtypes.Minter, initCoins))
+
+	suite.mockSendCoinsFromModuleToAccount(minterAcc, burnerAcc.GetAddress())
+	require.NoError(keeper.SendCoinsFromModuleToAccount(ctx, authtypes.Minter, burnerAcc.GetAddress(), initCoins))
+
+	supplyBeforeBurn, _, err = keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
+	require.NoError(err)
+
+	suite.mockBurnCoins(burnerAcc)
+	require.NoError(keeper.BurnCoins(ctx, authtypes.Burner, initCoins))
+
+	supplyAfterBurn, _, err = keeper.GetPaginatedTotalSupply(ctx, &query.PageRequest{})
+	require.NoError(err)
+	require.NotEqual(supplyBeforeBurn, supplyAfterBurn)
+	require.Equal(supplyAfterBurn, totalSupplyAcudos)
 }
 
 func (suite *KeeperTestSuite) TestSendCoinsNewAccount() {

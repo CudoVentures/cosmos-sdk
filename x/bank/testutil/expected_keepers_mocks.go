@@ -9,6 +9,7 @@ import (
 
 	types "github.com/cosmos/cosmos-sdk/types"
 	types0 "github.com/cosmos/cosmos-sdk/x/auth/types"
+	types1 "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -225,4 +226,67 @@ func (m *MockAccountKeeper) ValidatePermissions(macc types0.ModuleAccountI) erro
 func (mr *MockAccountKeeperMockRecorder) ValidatePermissions(macc interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidatePermissions", reflect.TypeOf((*MockAccountKeeper)(nil).ValidatePermissions), macc)
+}
+
+// MockDistributionKeeper is a mock of DistributionKeeper interface.
+type MockDistributionKeeper struct {
+	ctrl     *gomock.Controller
+	recorder *MockDistributionKeeperMockRecorder
+}
+
+// MockDistributionKeeperMockRecorder is the mock recorder for MockDistributionKeeper.
+type MockDistributionKeeperMockRecorder struct {
+	mock *MockDistributionKeeper
+}
+
+// NewMockDistributionKeeper creates a new mock instance.
+func NewMockDistributionKeeper(ctrl *gomock.Controller) *MockDistributionKeeper {
+	mock := &MockDistributionKeeper{ctrl: ctrl}
+	mock.recorder = &MockDistributionKeeperMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDistributionKeeper) EXPECT() *MockDistributionKeeperMockRecorder {
+	return m.recorder
+}
+
+// GetDistributionAccount mocks base method.
+func (m *MockDistributionKeeper) GetDistributionAccount(ctx types.Context) types0.ModuleAccountI {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDistributionAccount", ctx)
+	ret0, _ := ret[0].(types0.ModuleAccountI)
+	return ret0
+}
+
+// GetDistributionAccount indicates an expected call of GetDistributionAccount.
+func (mr *MockDistributionKeeperMockRecorder) GetDistributionAccount(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDistributionAccount", reflect.TypeOf((*MockDistributionKeeper)(nil).GetDistributionAccount), ctx)
+}
+
+// GetFeePool mocks base method.
+func (m *MockDistributionKeeper) GetFeePool(ctx types.Context) types1.FeePool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFeePool", ctx)
+	ret0, _ := ret[0].(types1.FeePool)
+	return ret0
+}
+
+// GetFeePool indicates an expected call of GetFeePool.
+func (mr *MockDistributionKeeperMockRecorder) GetFeePool(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFeePool", reflect.TypeOf((*MockDistributionKeeper)(nil).GetFeePool), ctx)
+}
+
+// SetFeePool mocks base method.
+func (m *MockDistributionKeeper) SetFeePool(ctx types.Context, feePool types1.FeePool) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetFeePool", ctx, feePool)
+}
+
+// SetFeePool indicates an expected call of SetFeePool.
+func (mr *MockDistributionKeeperMockRecorder) SetFeePool(ctx, feePool interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetFeePool", reflect.TypeOf((*MockDistributionKeeper)(nil).SetFeePool), ctx, feePool)
 }
