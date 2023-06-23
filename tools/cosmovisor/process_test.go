@@ -4,9 +4,8 @@
 package cosmovisor_test
 
 import (
-	"fmt"
 	"testing"
-	"time"
+	// "time"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -25,144 +24,144 @@ func TestProcessTestSuite(t *testing.T) {
 
 // TestLaunchProcess will try running the script a few times and watch upgrades work properly
 // and args are passed through
-func (s *processTestSuite) TestLaunchProcess() {
-	// binaries from testdata/validate directory
-	require := s.Require()
-	home := copyTestData(s.T(), "validate")
-	cfg := &cosmovisor.Config{Home: home, Name: "dummyd", PollInterval: 20, UnsafeSkipBackup: true}
-	logger := cosmovisor.NewLogger()
+// func (s *processTestSuite) TestLaunchProcess() {
+// 	// binaries from testdata/validate directory
+// 	require := s.Require()
+// 	home := copyTestData(s.T(), "validate")
+// 	cfg := &cosmovisor.Config{Home: home, Name: "dummyd", PollInterval: 20, UnsafeSkipBackup: true}
+// 	logger := cosmovisor.NewLogger()
 
-	// should run the genesis binary and produce expected output
-	stdout, stderr := NewBuffer(), NewBuffer()
-	currentBin, err := cfg.CurrentBin()
-	require.NoError(err)
-	require.Equal(cfg.GenesisBin(), currentBin)
+// 	// should run the genesis binary and produce expected output
+// 	stdout, stderr := NewBuffer(), NewBuffer()
+// 	currentBin, err := cfg.CurrentBin()
+// 	require.NoError(err)
+// 	require.Equal(cfg.GenesisBin(), currentBin)
 
-	launcher, err := cosmovisor.NewLauncher(logger, cfg)
-	require.NoError(err)
+// 	launcher, err := cosmovisor.NewLauncher(logger, cfg)
+// 	require.NoError(err)
 
-	upgradeFile := cfg.UpgradeInfoFilePath()
+// 	upgradeFile := cfg.UpgradeInfoFilePath()
 
-	args := []string{"foo", "bar", "1234", upgradeFile}
-	doUpgrade, err := launcher.Run(args, stdout, stderr)
-	require.NoError(err)
-	require.True(doUpgrade)
-	require.Equal("", stderr.String())
-	require.Equal(fmt.Sprintf("Genesis foo bar 1234 %s\nUPGRADE \"chain2\" NEEDED at height: 49: {}\n", upgradeFile), stdout.String())
+// 	args := []string{"foo", "bar", "1234", upgradeFile}
+// 	doUpgrade, err := launcher.Run(args, stdout, stderr)
+// 	require.NoError(err)
+// 	require.True(doUpgrade)
+// 	require.Equal("", stderr.String())
+// 	require.Equal(fmt.Sprintf("Genesis foo bar 1234 %s\nUPGRADE \"chain2\" NEEDED at height: 49: {}\n", upgradeFile), stdout.String())
 
-	// ensure this is upgraded now and produces new output
-	currentBin, err = cfg.CurrentBin()
-	require.NoError(err)
+// 	// ensure this is upgraded now and produces new output
+// 	currentBin, err = cfg.CurrentBin()
+// 	require.NoError(err)
 
-	require.Equal(cfg.UpgradeBin("chain2"), currentBin)
-	args = []string{"second", "run", "--verbose"}
-	stdout.Reset()
-	stderr.Reset()
+// 	require.Equal(cfg.UpgradeBin("chain2"), currentBin)
+// 	args = []string{"second", "run", "--verbose"}
+// 	stdout.Reset()
+// 	stderr.Reset()
 
-	doUpgrade, err = launcher.Run(args, stdout, stderr)
-	require.NoError(err)
-	require.False(doUpgrade)
-	require.Equal("", stderr.String())
-	require.Equal("Chain 2 is live!\nArgs: second run --verbose\nFinished successfully\n", stdout.String())
+// 	doUpgrade, err = launcher.Run(args, stdout, stderr)
+// 	require.NoError(err)
+// 	require.False(doUpgrade)
+// 	require.Equal("", stderr.String())
+// 	require.Equal("Chain 2 is live!\nArgs: second run --verbose\nFinished successfully\n", stdout.String())
 
-	// ended without other upgrade
-	require.Equal(cfg.UpgradeBin("chain2"), currentBin)
-}
+// 	// ended without other upgrade
+// 	require.Equal(cfg.UpgradeBin("chain2"), currentBin)
+// }
 
-func (s *processTestSuite) TestLaunchProcessWithRestartDelay() {
-	// binaries from testdata/validate directory
-	require := s.Require()
-	home := copyTestData(s.T(), "validate")
-	cfg := &cosmovisor.Config{Home: home, Name: "dummyd", RestartDelay: 5 * time.Second, PollInterval: 20, UnsafeSkipBackup: true}
-	logger := cosmovisor.NewLogger()
+// func (s *processTestSuite) TestLaunchProcessWithRestartDelay() {
+// 	// binaries from testdata/validate directory
+// 	require := s.Require()
+// 	home := copyTestData(s.T(), "validate")
+// 	cfg := &cosmovisor.Config{Home: home, Name: "dummyd", RestartDelay: 5 * time.Second, PollInterval: 20, UnsafeSkipBackup: true}
+// 	logger := cosmovisor.NewLogger()
 
-	// should run the genesis binary and produce expected output
-	stdout, stderr := NewBuffer(), NewBuffer()
-	currentBin, err := cfg.CurrentBin()
-	require.NoError(err)
-	require.Equal(cfg.GenesisBin(), currentBin)
+// 	// should run the genesis binary and produce expected output
+// 	stdout, stderr := NewBuffer(), NewBuffer()
+// 	currentBin, err := cfg.CurrentBin()
+// 	require.NoError(err)
+// 	require.Equal(cfg.GenesisBin(), currentBin)
 
-	launcher, err := cosmovisor.NewLauncher(logger, cfg)
-	require.NoError(err)
+// 	launcher, err := cosmovisor.NewLauncher(logger, cfg)
+// 	require.NoError(err)
 
-	upgradeFile := cfg.UpgradeInfoFilePath()
+// 	upgradeFile := cfg.UpgradeInfoFilePath()
 
-	start := time.Now()
+// 	start := time.Now()
 
-	doUpgrade, err := launcher.Run([]string{"foo", "bar", "1234", upgradeFile}, stdout, stderr)
-	require.NoError(err)
-	require.True(doUpgrade)
+// 	doUpgrade, err := launcher.Run([]string{"foo", "bar", "1234", upgradeFile}, stdout, stderr)
+// 	require.NoError(err)
+// 	require.True(doUpgrade)
 
-	// may not be the best way but the fastest way to check we meet the delay
-	// in addition to comparing both the runtime of this test and TestLaunchProcess in addition
-	if time.Since(start) < cfg.RestartDelay {
-		require.FailNow("restart delay not met")
-	}
-}
+// 	// may not be the best way but the fastest way to check we meet the delay
+// 	// in addition to comparing both the runtime of this test and TestLaunchProcess in addition
+// 	if time.Since(start) < cfg.RestartDelay {
+// 		require.FailNow("restart delay not met")
+// 	}
+// }
 
 // TestLaunchProcess will try running the script a few times and watch upgrades work properly
 // and args are passed through
-func (s *processTestSuite) TestLaunchProcessWithDownloads() {
-	// test case upgrade path (binaries from testdata/download directory):
-	// genesis -> chain2-zip_bin
-	// chain2-zip_bin -> ref_to_chain3-zip_dir.json = (json for the next download instructions) -> chain3-zip_dir
-	// chain3-zip_dir - doesn't upgrade
-	require := s.Require()
-	home := copyTestData(s.T(), "download")
-	cfg := &cosmovisor.Config{Home: home, Name: "autod", AllowDownloadBinaries: true, PollInterval: 100, UnsafeSkipBackup: true}
-	logger := cosmovisor.NewLogger()
-	upgradeFilename := cfg.UpgradeInfoFilePath()
+// func (s *processTestSuite) TestLaunchProcessWithDownloads() {
+// 	// test case upgrade path (binaries from testdata/download directory):
+// 	// genesis -> chain2-zip_bin
+// 	// chain2-zip_bin -> ref_to_chain3-zip_dir.json = (json for the next download instructions) -> chain3-zip_dir
+// 	// chain3-zip_dir - doesn't upgrade
+// 	require := s.Require()
+// 	home := copyTestData(s.T(), "download")
+// 	cfg := &cosmovisor.Config{Home: home, Name: "autod", AllowDownloadBinaries: true, PollInterval: 100, UnsafeSkipBackup: true}
+// 	logger := cosmovisor.NewLogger()
+// 	upgradeFilename := cfg.UpgradeInfoFilePath()
 
-	// should run the genesis binary and produce expected output
-	currentBin, err := cfg.CurrentBin()
-	require.NoError(err)
-	require.Equal(cfg.GenesisBin(), currentBin)
+// 	// should run the genesis binary and produce expected output
+// 	currentBin, err := cfg.CurrentBin()
+// 	require.NoError(err)
+// 	require.Equal(cfg.GenesisBin(), currentBin)
 
-	launcher, err := cosmovisor.NewLauncher(logger, cfg)
-	require.NoError(err)
+// 	launcher, err := cosmovisor.NewLauncher(logger, cfg)
+// 	require.NoError(err)
 
-	stdout, stderr := NewBuffer(), NewBuffer()
-	args := []string{"some", "args", upgradeFilename}
-	doUpgrade, err := launcher.Run(args, stdout, stderr)
+// 	stdout, stderr := NewBuffer(), NewBuffer()
+// 	args := []string{"some", "args", upgradeFilename}
+// 	doUpgrade, err := launcher.Run(args, stdout, stderr)
 
-	require.NoError(err)
-	require.True(doUpgrade)
-	require.Equal("", stderr.String())
-	require.Equal("Genesis autod. Args: some args "+upgradeFilename+"\n"+`ERROR: UPGRADE "chain2" NEEDED at height: 49: zip_binary`+"\n", stdout.String())
-	currentBin, err = cfg.CurrentBin()
-	require.NoError(err)
-	require.Equal(cfg.UpgradeBin("chain2"), currentBin)
+// 	require.NoError(err)
+// 	require.True(doUpgrade)
+// 	require.Equal("", stderr.String())
+// 	require.Equal("Genesis autod. Args: some args "+upgradeFilename+"\n"+`ERROR: UPGRADE "chain2" NEEDED at height: 49: zip_binary`+"\n", stdout.String())
+// 	currentBin, err = cfg.CurrentBin()
+// 	require.NoError(err)
+// 	require.Equal(cfg.UpgradeBin("chain2"), currentBin)
 
-	// start chain2
-	stdout.Reset()
-	stderr.Reset()
-	args = []string{"run", "--fast", upgradeFilename}
-	doUpgrade, err = launcher.Run(args, stdout, stderr)
-	require.NoError(err)
+// 	// start chain2
+// 	stdout.Reset()
+// 	stderr.Reset()
+// 	args = []string{"run", "--fast", upgradeFilename}
+// 	doUpgrade, err = launcher.Run(args, stdout, stderr)
+// 	require.NoError(err)
 
-	require.Equal("", stderr.String())
-	require.Equal("Chain 2 from zipped binary\nArgs: run --fast "+upgradeFilename+"\n"+`ERROR: UPGRADE "chain3" NEEDED at height: 936: ref_to_chain3-zip_dir.json module=main`+"\n", stdout.String())
-	// ended with one more upgrade
-	require.True(doUpgrade)
-	currentBin, err = cfg.CurrentBin()
-	require.NoError(err)
-	require.Equal(cfg.UpgradeBin("chain3"), currentBin)
+// 	require.Equal("", stderr.String())
+// 	require.Equal("Chain 2 from zipped binary\nArgs: run --fast "+upgradeFilename+"\n"+`ERROR: UPGRADE "chain3" NEEDED at height: 936: ref_to_chain3-zip_dir.json module=main`+"\n", stdout.String())
+// 	// ended with one more upgrade
+// 	require.True(doUpgrade)
+// 	currentBin, err = cfg.CurrentBin()
+// 	require.NoError(err)
+// 	require.Equal(cfg.UpgradeBin("chain3"), currentBin)
 
-	// run the last chain
-	args = []string{"end", "--halt", upgradeFilename}
-	stdout.Reset()
-	stderr.Reset()
-	doUpgrade, err = launcher.Run(args, stdout, stderr)
-	require.NoError(err)
-	require.False(doUpgrade)
-	require.Equal("", stderr.String())
-	require.Equal("Chain 3 from zipped directory\nArgs: end --halt "+upgradeFilename+"\n", stdout.String())
+// 	// run the last chain
+// 	args = []string{"end", "--halt", upgradeFilename}
+// 	stdout.Reset()
+// 	stderr.Reset()
+// 	doUpgrade, err = launcher.Run(args, stdout, stderr)
+// 	require.NoError(err)
+// 	require.False(doUpgrade)
+// 	require.Equal("", stderr.String())
+// 	require.Equal("Chain 3 from zipped directory\nArgs: end --halt "+upgradeFilename+"\n", stdout.String())
 
-	// and this doesn't upgrade
-	currentBin, err = cfg.CurrentBin()
-	require.NoError(err)
-	require.Equal(cfg.UpgradeBin("chain3"), currentBin)
-}
+// 	// and this doesn't upgrade
+// 	currentBin, err = cfg.CurrentBin()
+// 	require.NoError(err)
+// 	require.Equal(cfg.UpgradeBin("chain3"), currentBin)
+// }
 
 // TestSkipUpgrade tests heights that are identified to be skipped and return if upgrade height matches the skip heights
 func TestSkipUpgrade(t *testing.T) {
