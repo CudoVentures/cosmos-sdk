@@ -4,8 +4,7 @@ name: Build Docs
 on:
   pull_request:
     branches:
-      - main
-      - "release/**"
+      - cudos-master
     paths:
       - "docs/**"
       - "x/**/*.md"

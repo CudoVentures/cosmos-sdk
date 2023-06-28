@@ -6,8 +6,7 @@ on:
       - "**.go"
   push:
     branches:
-      - main
-      - release/**
+      - cudos-master
     paths:
       - "**.go"
 
