@@ -47,6 +47,7 @@ func (s *KeeperTestSuite) TestMsgVerifyInvariant() {
 	sender := sdk.AccAddress([]byte("addr1_______________"))
 
 	s.authKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(2)
+	s.authKeeper.EXPECT().GetBalance(gomock.Any(), gomock.Any(), gomock.Any()).Return(sdk.NewCoin(keeper.AdminTokenDenom, sdk.NewInt(1))).Times(2)
 	s.keeper.RegisterRoute("bank", "total-supply", func(sdk.Context) (string, bool) { return "", false })
 
 	testCases := []struct {
