@@ -64,7 +64,3 @@ The IBC module for the Cosmos SDK has its own [cosmos/ibc-go repository](https:/
 ## Disambiguation
 
 This Cosmos SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. As per our agreement, this disambiguation notice will stay here.
-
-## Changes to Cudos fork of cosmos-sdk
-
-This branch is made from tag v0.47.3. Not all tests are passing in this tag that's why this branch contains several commits that are addressing these issues

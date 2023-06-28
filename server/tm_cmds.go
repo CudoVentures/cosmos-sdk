@@ -4,7 +4,9 @@ package server
 
 import (
 	"fmt"
+	_ "unsafe"
 
+	tmlog "github.com/cometbft/cometbft/libs/log"
 	"github.com/cometbft/cometbft/light"
 	"github.com/cometbft/cometbft/node"
 	"github.com/cometbft/cometbft/p2p"
@@ -212,4 +214,22 @@ func BootstrapStateCmd(appCreator types.AppCreator) *cobra.Command {
 	cmd.Flags().Int64("height", 0, "Block height to bootstrap state at, if not provided it uses the latest block height in app state")
 
 	return cmd
+}
+
+//go:linkname resetAll github.com/cometbft/cometbft/blob/main/cmd/cometbft/commands.resetAll
+func resetAll(dbDir, addrBookFile, privValKeyFile, privValStateFile string, logger tmlog.Logger) error
+
+// UnsafeResetAllCmd - extension of the cometbft command, resets initialization
+func UnsafeResetAllCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "unsafe-reset-all",
+		Short: "Resets the blockchain database, removes address book files, and resets data/priv_validator_state.json to the genesis state",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			serverCtx := GetServerContextFromCmd(cmd)
+			cfg := serverCtx.Config
+
+			resetAll(cfg.DBDir(), cfg.P2P.AddrBookFile(), cfg.PrivValidatorKeyFile(), cfg.PrivValidatorStateFile(), serverCtx.Logger)
+			return nil
+		},
+	}
 }
