@@ -216,7 +216,7 @@ func BootstrapStateCmd(appCreator types.AppCreator) *cobra.Command {
 	return cmd
 }
 
-//go:linkname resetAll github.com/cometbft/cometbft/blob/main/cmd/cometbft/commands.resetAll
+//go:linkname resetAll github.com/cometbft/cometbft/cmd/cometbft/commands.resetAll
 func resetAll(dbDir, addrBookFile, privValKeyFile, privValStateFile string, logger tmlog.Logger) error
 
 // UnsafeResetAllCmd - extension of the cometbft command, resets initialization
