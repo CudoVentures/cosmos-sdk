@@ -64,3 +64,13 @@ The IBC module for the Cosmos SDK has its own [cosmos/ibc-go repository](https:/
 ## Disambiguation
 
 This Cosmos SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. As per our agreement, this disambiguation notice will stay here.
+
+## Changes to Cudos fork of cosmos-sdk
+
+Below are described the changes that Cudos have implemented to the cosmos-sdk for the purpose of Cudos Network.
+
+### [CUDOS-805] Empty moniker is not allowed for validators
+
+This is implemented due to CUDOS-805. Validators with empty monikers should not be allowed on Cudos Network.
+
+This is achieved through checks added in `validator.go`'s `EnsureLength` function, in the `ValidateBasic` functions for Create  and edit validator messages and in the functions for cli tx. Some tests where validators are created had to be edited as well, to set them up with any mnemonic as opposed to the default empty mnemonic.

@@ -112,6 +112,10 @@ func (msg MsgCreateValidator) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty description")
 	}
 
+	if msg.Description.Moniker == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty moniker")
+	}
+
 	if msg.Commission == (CommissionRates{}) {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty commission")
 	}
@@ -178,6 +182,10 @@ func (msg MsgEditValidator) ValidateBasic() error {
 
 	if msg.Description == (Description{}) {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty description")
+	}
+
+	if msg.Description.Moniker == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty moniker")
 	}
 
 	if msg.MinSelfDelegation != nil && !msg.MinSelfDelegation.IsPositive() {
