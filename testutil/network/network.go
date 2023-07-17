@@ -69,6 +69,7 @@ var lock = new(sync.Mutex)
 type (
 	AppConstructor     = func(val ValidatorI) servertypes.Application
 	TestFixtureFactory = func() TestFixture
+	PatchGenesis       = func(cfg *Config, genBalances []banktypes.Balance, validators []*Validator) error
 )
 
 type TestFixture struct {
@@ -106,6 +107,7 @@ type Config struct {
 	APIAddress       string                     // REST API listen address (including port)
 	GRPCAddress      string                     // GRPC server listen address (including port)
 	PrintMnemonic    bool                       // print the mnemonic of first validator as log output for testing
+	PatchGenesis     PatchGenesis
 }
 
 // DefaultConfig returns a sane default configuration suitable for nearly all
@@ -134,6 +136,7 @@ func DefaultConfig(factory TestFixtureFactory) Config {
 		SigningAlgo:       string(hd.Secp256k1Type),
 		KeyringOptions:    []keyring.Option{},
 		PrintMnemonic:     false,
+		PatchGenesis:      nil,
 	}
 }
 
@@ -567,6 +570,13 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			APIAddress: apiAddr,
 			Address:    addr,
 			ValAddress: sdk.ValAddress(addr),
+		}
+	}
+
+	if cfg.PatchGenesis != nil {
+		err := cfg.PatchGenesis(&cfg, genBalances, network.Validators)
+		if err != nil {
+			return nil, err
 		}
 	}
 
