@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	"cosmossdk.io/math"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -17,6 +19,7 @@ const (
 	TypeMsgDelegate                  = "delegate"
 	TypeMsgBeginRedelegate           = "begin_redelegate"
 	TypeMsgUpdateParams              = "update_params"
+	MinSelfDelegation                = "50000000000000000000000"
 )
 
 var (
@@ -128,6 +131,15 @@ func (msg MsgCreateValidator) ValidateBasic() error {
 		return sdkerrors.Wrap(
 			sdkerrors.ErrInvalidRequest,
 			"minimum self delegation must be a positive integer",
+		)
+	}
+
+	msd, _ := sdk.NewIntFromString(MinSelfDelegation)
+
+	if msg.MinSelfDelegation.LT(msd) {
+		return sdkerrors.Wrap(
+			sdkerrors.ErrInvalidRequest,
+			fmt.Sprintf("minimum self delegation must be more than %v", msd),
 		)
 	}
 
