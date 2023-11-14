@@ -134,7 +134,14 @@ func (msg MsgCreateValidator) ValidateBasic() error {
 		)
 	}
 
-	msd, _ := sdk.NewIntFromString(MinSelfDelegation)
+	msd, ok := sdk.NewIntFromString(MinSelfDelegation)
+
+	if !ok {
+		return sdkerrors.Wrap(
+			sdkerrors.ErrInvalidRequest,
+			fmt.Sprintf("can not convert string %s to int", MinSelfDelegation),
+		)
+	}
 
 	if msg.MinSelfDelegation.LT(msd) {
 		return sdkerrors.Wrap(
