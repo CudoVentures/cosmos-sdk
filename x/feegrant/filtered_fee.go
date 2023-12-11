@@ -14,8 +14,10 @@ const (
 	gasCostPerIteration = uint64(10)
 )
 
-var _ FeeAllowanceI = (*AllowedMsgAllowance)(nil)
-var _ types.UnpackInterfacesMessage = (*AllowedMsgAllowance)(nil)
+var (
+	_ FeeAllowanceI                 = (*AllowedMsgAllowance)(nil)
+	_ types.UnpackInterfacesMessage = (*AllowedMsgAllowance)(nil)
+)
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (a *AllowedMsgAllowance) UnpackInterfaces(unpacker types.AnyUnpacker) error {
@@ -61,7 +63,17 @@ func (a *AllowedMsgAllowance) Accept(ctx sdk.Context, fee sdk.Coins, msgs []sdk.
 		return false, err
 	}
 
-	return allowance.Accept(ctx, fee, msgs)
+	remove, err := allowance.Accept(ctx, fee, msgs)
+	if err != nil {
+		return false, err
+	}
+
+	a.Allowance, err = types.NewAnyWithValue(allowance.(proto.Message))
+	if err != nil {
+		return false, err
+	}
+
+	return remove, nil
 }
 
 func (a *AllowedMsgAllowance) allowedMsgsToMap(ctx sdk.Context) map[string]bool {

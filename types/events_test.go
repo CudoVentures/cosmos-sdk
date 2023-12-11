@@ -2,7 +2,6 @@ package types_test
 
 import (
 	"encoding/json"
-	fmt "fmt"
 	"reflect"
 	"testing"
 
@@ -81,9 +80,8 @@ func (s *eventsTestSuite) TestEmitTypedEvent() {
 			s.Require().Len(em.Events(), 1)
 			attrs := em.Events()[0].Attributes
 			s.Require().Len(attrs, 2)
-			fmt.Println(attrs[0].Key)
-			s.Require().Equal([]byte("amount"), attrs[0].Key)
-			s.Require().Equal([]byte("denom"), attrs[1].Key)
+			s.Require().Equal(string(attrs[0].Key), "amount")
+			s.Require().Equal(string(attrs[1].Key), "denom")
 		}
 	})
 }
