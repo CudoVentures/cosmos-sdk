@@ -21,6 +21,8 @@
     - [QueryAccountResponse](#cosmos.auth.v1beta1.QueryAccountResponse)
     - [QueryAccountsRequest](#cosmos.auth.v1beta1.QueryAccountsRequest)
     - [QueryAccountsResponse](#cosmos.auth.v1beta1.QueryAccountsResponse)
+    - [QueryModuleAccountByNameRequest](#cosmos.auth.v1beta1.QueryModuleAccountByNameRequest)
+    - [QueryModuleAccountByNameResponse](#cosmos.auth.v1beta1.QueryModuleAccountByNameResponse)
     - [QueryParamsRequest](#cosmos.auth.v1beta1.QueryParamsRequest)
     - [QueryParamsResponse](#cosmos.auth.v1beta1.QueryParamsResponse)
   
@@ -124,6 +126,12 @@
     - [Pair](#cosmos.base.kv.v1beta1.Pair)
     - [Pairs](#cosmos.base.kv.v1beta1.Pairs)
   
+- [cosmos/base/node/v1beta1/query.proto](#cosmos/base/node/v1beta1/query.proto)
+    - [ConfigRequest](#cosmos.base.node.v1beta1.ConfigRequest)
+    - [ConfigResponse](#cosmos.base.node.v1beta1.ConfigResponse)
+  
+    - [Service](#cosmos.base.node.v1beta1.Service)
+  
 - [cosmos/base/reflection/v1beta1/reflection.proto](#cosmos/base/reflection/v1beta1/reflection.proto)
     - [ListAllInterfacesRequest](#cosmos.base.reflection.v1beta1.ListAllInterfacesRequest)
     - [ListAllInterfacesResponse](#cosmos.base.reflection.v1beta1.ListAllInterfacesResponse)
@@ -177,6 +185,8 @@
     - [StoreInfo](#cosmos.base.store.v1beta1.StoreInfo)
   
 - [cosmos/base/store/v1beta1/listening.proto](#cosmos/base/store/v1beta1/listening.proto)
+    - [BlockMetadata](#cosmos.base.store.v1beta1.BlockMetadata)
+    - [BlockMetadata.DeliverTx](#cosmos.base.store.v1beta1.BlockMetadata.DeliverTx)
     - [StoreKVPair](#cosmos.base.store.v1beta1.StoreKVPair)
   
 - [cosmos/base/tendermint/v1beta1/query.proto](#cosmos/base/tendermint/v1beta1/query.proto)
@@ -325,6 +335,8 @@
 - [cosmos/feegrant/v1beta1/query.proto](#cosmos/feegrant/v1beta1/query.proto)
     - [QueryAllowanceRequest](#cosmos.feegrant.v1beta1.QueryAllowanceRequest)
     - [QueryAllowanceResponse](#cosmos.feegrant.v1beta1.QueryAllowanceResponse)
+    - [QueryAllowancesByGranterRequest](#cosmos.feegrant.v1beta1.QueryAllowancesByGranterRequest)
+    - [QueryAllowancesByGranterResponse](#cosmos.feegrant.v1beta1.QueryAllowancesByGranterResponse)
     - [QueryAllowancesRequest](#cosmos.feegrant.v1beta1.QueryAllowancesRequest)
     - [QueryAllowancesResponse](#cosmos.feegrant.v1beta1.QueryAllowancesResponse)
   
@@ -838,6 +850,36 @@ Since: cosmos-sdk 0.43
 
 
 
+<a name="cosmos.auth.v1beta1.QueryModuleAccountByNameRequest"></a>
+
+### QueryModuleAccountByNameRequest
+QueryModuleAccountByNameRequest is the request type for the Query/ModuleAccountByName RPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `name` | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="cosmos.auth.v1beta1.QueryModuleAccountByNameResponse"></a>
+
+### QueryModuleAccountByNameResponse
+QueryModuleAccountByNameResponse is the response type for the Query/ModuleAccountByName RPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `account` | [google.protobuf.Any](#google.protobuf.Any) |  |  |
+
+
+
+
+
+
 <a name="cosmos.auth.v1beta1.QueryParamsRequest"></a>
 
 ### QueryParamsRequest
@@ -881,6 +923,7 @@ Query defines the gRPC querier service.
 Since: cosmos-sdk 0.43 | GET|/cosmos/auth/v1beta1/accounts|
 | `Account` | [QueryAccountRequest](#cosmos.auth.v1beta1.QueryAccountRequest) | [QueryAccountResponse](#cosmos.auth.v1beta1.QueryAccountResponse) | Account returns account details based on address. | GET|/cosmos/auth/v1beta1/accounts/{address}|
 | `Params` | [QueryParamsRequest](#cosmos.auth.v1beta1.QueryParamsRequest) | [QueryParamsResponse](#cosmos.auth.v1beta1.QueryParamsResponse) | Params queries all parameters. | GET|/cosmos/auth/v1beta1/params|
+| `ModuleAccountByName` | [QueryModuleAccountByNameRequest](#cosmos.auth.v1beta1.QueryModuleAccountByNameRequest) | [QueryModuleAccountByNameResponse](#cosmos.auth.v1beta1.QueryModuleAccountByNameResponse) | ModuleAccountByName returns the module account info by module name | GET|/cosmos/auth/v1beta1/module_accounts/{name}|
 
  <!-- end services -->
 
@@ -931,6 +974,8 @@ the provide method with expiration time.
 ### GrantAuthorization
 GrantAuthorization extends a grant with both the addresses of the grantee and granter.
 It is used in genesis.proto and query.proto
+
+Since: cosmos-sdk 0.45.2
 
 
 | Field | Type | Label | Description |
@@ -1156,10 +1201,10 @@ Query defines the gRPC querier service.
 | `Grants` | [QueryGrantsRequest](#cosmos.authz.v1beta1.QueryGrantsRequest) | [QueryGrantsResponse](#cosmos.authz.v1beta1.QueryGrantsResponse) | Returns list of `Authorization`, granted to the grantee by the granter. | GET|/cosmos/authz/v1beta1/grants|
 | `GranterGrants` | [QueryGranterGrantsRequest](#cosmos.authz.v1beta1.QueryGranterGrantsRequest) | [QueryGranterGrantsResponse](#cosmos.authz.v1beta1.QueryGranterGrantsResponse) | GranterGrants returns list of `GrantAuthorization`, granted by granter.
 
-Since: cosmos-sdk 0.46 | GET|/cosmos/authz/v1beta1/grants/granter/{granter}|
+Since: cosmos-sdk 0.45.2 | GET|/cosmos/authz/v1beta1/grants/granter/{granter}|
 | `GranteeGrants` | [QueryGranteeGrantsRequest](#cosmos.authz.v1beta1.QueryGranteeGrantsRequest) | [QueryGranteeGrantsResponse](#cosmos.authz.v1beta1.QueryGranteeGrantsResponse) | GranteeGrants returns a list of `GrantAuthorization` by grantee.
 
-Since: cosmos-sdk 0.46 | GET|/cosmos/authz/v1beta1/grants/grantee/{grantee}|
+Since: cosmos-sdk 0.45.2 | GET|/cosmos/authz/v1beta1/grants/grantee/{grantee}|
 
  <!-- end services -->
 
@@ -2205,6 +2250,57 @@ Pairs defines a repeated slice of Pair objects.
 
 
 
+<a name="cosmos/base/node/v1beta1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## cosmos/base/node/v1beta1/query.proto
+
+
+
+<a name="cosmos.base.node.v1beta1.ConfigRequest"></a>
+
+### ConfigRequest
+ConfigRequest defines the request structure for the Config gRPC query.
+
+
+
+
+
+
+<a name="cosmos.base.node.v1beta1.ConfigResponse"></a>
+
+### ConfigResponse
+ConfigResponse defines the response structure for the Config gRPC query.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `minimum_gas_price` | [string](#string) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="cosmos.base.node.v1beta1.Service"></a>
+
+### Service
+Service defines the gRPC querier service for node related queries.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `Config` | [ConfigRequest](#cosmos.base.node.v1beta1.ConfigRequest) | [ConfigResponse](#cosmos.base.node.v1beta1.ConfigResponse) | Config queries for the operator configuration. | GET|/cosmos/base/node/v1beta1/config|
+
+ <!-- end services -->
+
+
+
 <a name="cosmos/base/reflection/v1beta1/reflection.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -2905,6 +3001,43 @@ between a store name and the commit ID.
 <p align="right"><a href="#top">Top</a></p>
 
 ## cosmos/base/store/v1beta1/listening.proto
+
+
+
+<a name="cosmos.base.store.v1beta1.BlockMetadata"></a>
+
+### BlockMetadata
+BlockMetadata contains all the abci event data of a block
+the file streamer dump them into files together with the state changes.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `request_begin_block` | [tendermint.abci.RequestBeginBlock](#tendermint.abci.RequestBeginBlock) |  |  |
+| `response_begin_block` | [tendermint.abci.ResponseBeginBlock](#tendermint.abci.ResponseBeginBlock) |  |  |
+| `deliver_txs` | [BlockMetadata.DeliverTx](#cosmos.base.store.v1beta1.BlockMetadata.DeliverTx) | repeated |  |
+| `request_end_block` | [tendermint.abci.RequestEndBlock](#tendermint.abci.RequestEndBlock) |  |  |
+| `response_end_block` | [tendermint.abci.ResponseEndBlock](#tendermint.abci.ResponseEndBlock) |  |  |
+| `response_commit` | [tendermint.abci.ResponseCommit](#tendermint.abci.ResponseCommit) |  |  |
+
+
+
+
+
+
+<a name="cosmos.base.store.v1beta1.BlockMetadata.DeliverTx"></a>
+
+### BlockMetadata.DeliverTx
+DeliverTx encapulate deliver tx request and response.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `request` | [tendermint.abci.RequestDeliverTx](#tendermint.abci.RequestDeliverTx) |  |  |
+| `response` | [tendermint.abci.ResponseDeliverTx](#tendermint.abci.ResponseDeliverTx) |  |  |
+
+
+
 
 
 
@@ -4850,6 +4983,38 @@ QueryAllowanceResponse is the response type for the Query/Allowance RPC method.
 
 
 
+<a name="cosmos.feegrant.v1beta1.QueryAllowancesByGranterRequest"></a>
+
+### QueryAllowancesByGranterRequest
+QueryAllowancesByGranterRequest is the request type for the Query/AllowancesByGranter RPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `granter` | [string](#string) |  |  |
+| `pagination` | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an pagination for the request. |
+
+
+
+
+
+
+<a name="cosmos.feegrant.v1beta1.QueryAllowancesByGranterResponse"></a>
+
+### QueryAllowancesByGranterResponse
+QueryAllowancesByGranterResponse is the response type for the Query/AllowancesByGranter RPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `allowances` | [Grant](#cosmos.feegrant.v1beta1.Grant) | repeated | allowances that have been issued by the granter. |
+| `pagination` | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines an pagination for the response. |
+
+
+
+
+
+
 <a name="cosmos.feegrant.v1beta1.QueryAllowancesRequest"></a>
 
 ### QueryAllowancesRequest
@@ -4897,6 +5062,7 @@ Query defines the gRPC querier service.
 | ----------- | ------------ | ------------- | ------------| ------- | -------- |
 | `Allowance` | [QueryAllowanceRequest](#cosmos.feegrant.v1beta1.QueryAllowanceRequest) | [QueryAllowanceResponse](#cosmos.feegrant.v1beta1.QueryAllowanceResponse) | Allowance returns fee granted to the grantee by the granter. | GET|/cosmos/feegrant/v1beta1/allowance/{granter}/{grantee}|
 | `Allowances` | [QueryAllowancesRequest](#cosmos.feegrant.v1beta1.QueryAllowancesRequest) | [QueryAllowancesResponse](#cosmos.feegrant.v1beta1.QueryAllowancesResponse) | Allowances returns all the grants for address. | GET|/cosmos/feegrant/v1beta1/allowances/{grantee}|
+| `AllowancesByGranter` | [QueryAllowancesByGranterRequest](#cosmos.feegrant.v1beta1.QueryAllowancesByGranterRequest) | [QueryAllowancesByGranterResponse](#cosmos.feegrant.v1beta1.QueryAllowancesByGranterResponse) | AllowancesByGranter returns all the grants given by an address Since v0.46 | GET|/cosmos/feegrant/v1beta1/issued/{granter}|
 
  <!-- end services -->
 
@@ -7595,6 +7761,11 @@ SignMode represents a signing mode with its own security guarantees.
 | SIGN_MODE_DIRECT | 1 | SIGN_MODE_DIRECT specifies a signing mode which uses SignDoc and is verified with raw bytes from Tx |
 | SIGN_MODE_TEXTUAL | 2 | SIGN_MODE_TEXTUAL is a future signing mode that will verify some human-readable textual representation on top of the binary representation from SIGN_MODE_DIRECT |
 | SIGN_MODE_LEGACY_AMINO_JSON | 127 | SIGN_MODE_LEGACY_AMINO_JSON is a backwards compatibility mode which uses Amino JSON and will be removed in the future |
+| SIGN_MODE_EIP_191 | 191 | SIGN_MODE_EIP_191 specifies the sign mode for EIP 191 signing on the Cosmos SDK. Ref: https://eips.ethereum.org/EIPS/eip-191
+
+Currently, SIGN_MODE_EIP_191 is registered as a SignMode enum variant, but is not implemented on the SDK by default. To enable EIP-191, you need to pass a custom `TxConfig` that has an implementation of `SignModeHandler` for EIP-191. The SDK may decide to fully support EIP-191 in the future.
+
+Since: cosmos-sdk 0.45.2 |
 
 
  <!-- end enums -->
